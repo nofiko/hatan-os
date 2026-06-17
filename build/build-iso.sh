@@ -32,6 +32,17 @@ command -v mkarchiso &>/dev/null || {
 
 [[ -f "$PROFILE_DIR/profiledef.sh" ]] || err "ملف profiledef.sh غير موجود"
 
+RELENG="/usr/share/archiso/configs/releng"
+if [[ -d "$RELENG" ]]; then
+    step "دمج ملفات الإقلاع من archiso releng"
+    [[ -f "$PROFILE_DIR/bootstrap_packages" ]] || cp "$RELENG/bootstrap_packages" "$PROFILE_DIR/"
+    for dir in grub syslinux; do
+        if [[ ! -d "$PROFILE_DIR/$dir" && -d "$RELENG/$dir" ]]; then
+            cp -a "$RELENG/$dir" "$PROFILE_DIR/"
+        fi
+    done
+fi
+
 step "مزامنة الأصول"
 bash "$PROJECT_DIR/scripts/sync-assets.sh" 2>/dev/null || true
 

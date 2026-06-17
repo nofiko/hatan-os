@@ -5,6 +5,9 @@ base
 linux
 linux-firmware
 amd-ucode
+mkinitcpio
+mkinitcpio-archiso
+squashfs-tools
 
 # شبكة
 networkmanager

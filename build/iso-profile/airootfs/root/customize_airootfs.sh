@@ -19,10 +19,9 @@ systemctl enable NetworkManager.service
 # مثبّت HATAN — يبدأ تلقائياً بعد الإقلاع
 systemctl enable hatan-installer.service
 
-# كلمة مرور root فارغة للـ live (Arch standard)
-echo "root:hatan" | chpasswd
-
-# علامة بيئة ISO
+# root بدون كلمة مرور (Arch live standard — للطوارئ)
+passwd -d root 2>/dev/null || true
+passwd -u root 2>/dev/null || true
 mkdir -p /etc/hatan
 echo "1" > /etc/hatan/iso-live
 
