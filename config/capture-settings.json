@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "recordButton": "R4",
+  "includeAudio": true,
+  "quality": "native",
+  "mode": "video",
+  "outputDir": "Videos/HATAN"
+}

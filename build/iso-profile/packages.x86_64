@@ -1,0 +1,45 @@
+# HATAN OS live ISO — حزم بيئة التثبيت
+
+# أساس
+base
+linux
+linux-firmware
+amd-ucode
+
+# شبكة
+networkmanager
+iw
+wpa_supplicant
+wireless_tools
+reflector
+
+# تثبيت على القرص
+arch-install-scripts
+grub
+efibootmgr
+dosfstools
+e2fsprogs
+parted
+gptfdisk
+rsync
+
+# واجهة المثبّت
+chromium
+gamescope
+xorg-xwayland
+mesa
+pipewire
+pipewire-pulse
+wireplumber
+wvkbd
+ttf-dejavu
+noto-fonts
+noto-fonts-arabic
+
+# أدوات
+sudo
+bash
+python
+nano
+curl
+wget

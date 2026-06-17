@@ -1,0 +1,8 @@
+build/output/
+node_modules/
+__pycache__/
+*.pyc
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+.DS_Store
+Thumbs.db

@@ -1,0 +1,36 @@
+# HATAN OS - Plymouth boot splash
+
+splash_image = Image("boot.png");
+screen_width = Window.GetWidth();
+screen_height = Window.GetHeight();
+image_width = splash_image.GetWidth();
+image_height = splash_image.GetHeight();
+
+scale_x = screen_width / image_width;
+scale_y = screen_height / image_height;
+scale = scale_x < scale_y ? scale_x : scale_y;
+
+scaled_width = image_width * scale;
+scaled_height = image_height * scale;
+offset_x = (screen_width - scaled_width) / 2;
+offset_y = (screen_height - scaled_height) / 2;
+
+splash_sprite = Sprite(splash_image);
+splash_sprite.SetX(offset_x);
+splash_sprite.SetY(offset_y);
+splash_sprite.SetWidth(scaled_width);
+splash_sprite.SetHeight(scaled_height);
+
+fun refresh_callback ()
+{
+    splash_sprite.SetOpacity(1);
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
+
+fun display_normal_callback ()
+{
+    splash_sprite.SetOpacity(1);
+}
+
+Plymouth.SetDisplayNormalFunction(display_normal_callback);

@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Xbox
+Name[ar]=إكس بوكس
+Comment=Xbox Cloud Gaming and home streaming
+Exec=flatpak run io.github.unknownskl.greenlight
+Icon=io.github.unknownskl.greenlight
+Terminal=false
+Type=Application
+Categories=Game;
+StartupNotify=true

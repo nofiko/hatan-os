@@ -1,0 +1,19 @@
+/* HATAN OS - ثيم تقني إلكتروني */
+
+:root {
+  --primary: #C41E3A;
+  --electric: #00E5FF;
+  --electric-dim: #0088AA;
+  --circuit: #1A3A2A;
+  --trace: #2ECC71;
+  --background: #020408;
+  --surface: #0A0E14;
+  --surface-hover: #101820;
+  --text: #E8F4F8;
+  --text-muted: #5A7A8A;
+  --accent: #C41E3A;
+  --border-radius: 4px;
+  --font: 'Share Tech Mono', 'Cairo', monospace;
+  --glow: rgba(0, 229, 255, 0.35);
+  --glow-red: rgba(196, 30, 58, 0.5);
+}

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Files
+Name[ar]=الملفات
+Comment=Browse device files and apps
+Comment[ar]=تصفح ملفات الجهاز والتطبيقات
+Exec=dolphin ~/
+Icon=system-file-manager
+Terminal=false
+Type=Application
+Categories=System;FileManager;
+StartupNotify=true

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, height=800, initial-scale=1.0">
+  <title>HATAN OS</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/settings.css">
+  <link rel="stylesheet" href="css/capture.css">
+  <link rel="icon" href="assets/boot.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="boot-splash" id="boot-splash">
+    <img src="assets/boot.png" alt="HATAN OS" class="boot-splash-img">
+    <div class="boot-splash-loader"></div>
+    <div class="boot-splash-version" id="boot-version">HATAN OS</div>
+  </div>
+
+  <div class="shell" id="shell">
+    <div class="welcome-screen">
+      <h1 class="welcome-text" id="welcome-text">مرحباً</h1>
+
+      <canvas id="network-canvas" class="network-canvas"></canvas>
+
+      <div class="open-prompt-wrap" id="open-prompt-wrap">
+        <div class="nfc-hub" id="nfc-hub">
+          <div class="nfc-clear"></div>
+          <svg class="nfc-svg" viewBox="0 0 280 280" aria-hidden="true">
+            <circle class="nfc-orbit nfc-orbit-1" cx="140" cy="140" r="118"/>
+            <circle class="nfc-orbit nfc-orbit-2" cx="140" cy="140" r="108"/>
+            <circle class="nfc-orbit nfc-orbit-3" cx="140" cy="140" r="98"/>
+
+            <g class="nfc-waves" transform="translate(140,140)">
+              <g class="nfc-sector" transform="rotate(0)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(45)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(90)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(135)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(180)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(225)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(270)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(315)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+            </g>
+
+            <circle class="nfc-pulse-ring" cx="140" cy="140" r="115"/>
+            <circle class="nfc-pulse-ring nfc-delay" cx="140" cy="140" r="115"/>
+          </svg>
+          <button class="open-prompt" id="open-prompt">اضغط هنا لفتح النظام</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="home-screen" id="home-screen">
+      <div class="home-bg" aria-hidden="true">
+        <div class="home-bg-image" id="home-bg-image"></div>
+        <div class="home-bg-mesh"></div>
+        <div class="home-bg-fog"></div>
+        <div class="home-bg-vignette"></div>
+      </div>
+      <canvas class="home-grid-canvas" id="home-grid-canvas"></canvas>
+      <div class="home-scene" id="home-scene">
+        <div class="home-logo-3d" id="home-logo-wrap">
+          <div class="home-logo-plate">
+            <img class="home-logo-img" id="home-logo-img" src="assets/boot.png" alt="">
+            <div class="home-logo-shine"></div>
+          </div>
+          <p class="home-brand" id="home-brand">HATAN OS</p>
+        </div>
+        <section class="home-games-wrap" id="home-games" aria-label="آخر الألعاب">
+          <div class="home-games-head">
+            <span class="home-games-tag">RECENT</span>
+            <span class="home-games-title">آخر الألعاب</span>
+            <button type="button" class="home-games-store" id="home-games-store">فتح Steam ↗</button>
+          </div>
+          <div class="home-games-row" id="home-games-row"></div>
+        </section>
+        <div class="home-dock-3d" id="home-apps"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tap-unlock" id="tap-unlock">اضغط للبدء</div>
+
+  <audio id="startup-sound" src="assets/audio/startup-sound.mp3" preload="auto"></audio>
+  <audio id="welcome-sound" src="assets/audio/welcom.mp3" preload="auto"></audio>
+  <audio id="press-music" src="assets/audio/press-music.mp3" preload="auto" loop></audio>
+  <audio id="select-sound" src="assets/audio/select.mp3" preload="auto"></audio>
+  <audio id="dis-sound" src="assets/audio/DIS.mp3" preload="auto"></audio>
+
+  <script src="js/config.js"></script>
+  <script src="js/gamepad-nav.js"></script>
+  <script src="js/status-bar.js"></script>
+  <script src="js/button-actions.js"></script>
+  <script src="js/network-mesh.js"></script>
+  <script src="js/home-grid.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/capture.js"></script>
+  <script src="js/shell.js"></script>
+</body>
+</html>

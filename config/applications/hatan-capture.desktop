@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=تصوير الشاشة
+Name[en]=Screen Capture
+Comment=HATAN OS screen video recording with global shortcut
+Icon=video-display
+Categories=Utility;AudioVideo;
+Exec=hat-shell launch capture
+Terminal=false

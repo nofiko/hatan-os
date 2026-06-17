@@ -1,0 +1,13 @@
+[Unit]
+Description=HATAN OS Global Screen Capture Shortcut
+After=graphical-session.target pipewire.service
+
+[Service]
+Type=simple
+Environment=HATAN_DIR=/opt/hatan-os
+ExecStart=/opt/hatan-os/scripts/hat-capture-daemon.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

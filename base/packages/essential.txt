@@ -1,0 +1,50 @@
+# HATAN OS - الحزم الأساسية
+# تعريفات Valve + دعم Steam Deck LCD
+
+# Kernel
+jupiter-main/linux-neptune
+jupiter-main/linux-neptune-headers
+jupiter-main/linux-firmware-neptune
+
+# دعم الهاردوير
+jupiter-main/jupiter-hw-support
+jupiter-main/jupiter-legacy-support
+jupiter-main/jupiter-fan-control
+jupiter-main/jupiter-dock-updater-bin
+jupiter-main/steamdeck-dsp
+
+# الرسوميات
+jupiter-main/mesa
+jupiter-main/gamescope
+jupiter-main/xorg-xwayland-jupiter
+jupiter-main/vpower
+
+# الصوت
+jupiter-main/wireplumber
+holo-main/noise-suppression-for-voice-git
+
+# الشاشة والجلسة
+jupiter-main/sddm-wayland
+jupiter-main/steamdeck-kde-presets
+
+# Steam
+jupiter-main/steam-jupiter-stable
+
+# Flatpak (لتطبيقات Xbox و Microsoft Store)
+flatpak
+
+# Bluetooth
+jupiter-main/bluez
+jupiter-main/bluez-plugins
+jupiter-main/bluez-utils
+
+# أدوات أساسية
+base
+base-devel
+sudo
+networkmanager
+pipewire
+pipewire-pulse
+pipewire-alsa
+pipewire-jack
+lib32-pipewire

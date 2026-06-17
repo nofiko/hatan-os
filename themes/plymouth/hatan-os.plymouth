@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=HATAN OS
+Description=HATAN OS boot splash for Steam Deck
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/hatan-os
+ScriptFile=/usr/share/plymouth/themes/hatan-os/hatan-os.script
