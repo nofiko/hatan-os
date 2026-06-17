@@ -28,11 +28,12 @@ HAT2/
 
 ## التثبيت على Steam Deck
 
-**الطريقة الموصى بها:** بناء ISO HATAN OS → Boot من USB → واجهة تثبيت + لوحة لمس.
+**الطريقة الموصى بها:** بناء ISO → Boot من USB → **تثبيت تلقائي** (8 ثوانٍ).
 
 ```bat
-build-iso.bat          ← تعليمات البناء على Windows
-docs/ISO.md            ← الدليل الكامل
+build-iso.bat
+docs/EASY_INSTALL.md     ← أسهل طريقة خطوة بخطوة
+docs/ISO.md
 ```
 
 أو Arch موجود مسبقاً: راجع `docs/TEST.md`

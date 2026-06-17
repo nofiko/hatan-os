@@ -11,6 +11,10 @@ export HATAN_ISO_LIVE=1
 export HATAN_PROJECT_DIR="$HAT_DIR"
 export DISPLAY="${DISPLAY:-:0}"
 
+AUTO_INSTALL=0
+grep -q 'hatan.autoinstall=1' /proc/cmdline 2>/dev/null && AUTO_INSTALL=1
+export HATAN_AUTO_INSTALL="$AUTO_INSTALL"
+
 log() { echo "[hatan-live] $*"; }
 
 # انتظر الشبكة (WiFi)
@@ -43,6 +47,8 @@ if ! kill -0 "$SERVER_PID" 2>/dev/null; then
     log "ERROR: install server failed"
     exit 1
 fi
+
+[[ "$AUTO_INSTALL" == "1" ]] && URL="${URL}?autoinstall=1"
 
 BROWSER="chromium"
 command -v chromium &>/dev/null || BROWSER="firefox"

@@ -125,6 +125,24 @@ cp -f "$CHROOT_PROGRESS" "$PROGRESS_FILE" 2>/dev/null || true
 
 # ── 7. Bootloader ──────────────────────────────────────
 report_progress "إعداد الإقلاع" 92
+ROOT_UUID=$(blkid -s UUID -o value "$ROOT_PART")
+
+# تعطيل UKI (يسبب gpt-auto-root) — استخدم GRUB + initramfs فقط
+arch-chroot "$MNT" bash -c '
+    for f in /etc/mkinitcpio.d/*.preset; do
+        [[ -f "$f" ]] || continue
+        sed -i "s/^default_uki=/#default_uki=/" "$f"
+        sed -i "s/^fallback_uki=/#fallback_uki=/" "$f"
+    done
+    rm -f /boot/EFI/Linux/*.efi 2>/dev/null || true
+    mkdir -p /etc/cmdline.d
+'
+
+arch-chroot "$MNT" bash -c "echo 'root=UUID=${ROOT_UUID} rw' > /etc/cmdline.d/00-root.conf"
+arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw\"|" /etc/default/grub 2>/dev/null || \
+    arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw\"' >> /etc/default/grub"
+arch-chroot "$MNT" mkinitcpio -p linux 2>/dev/null || true
+
 arch-chroot "$MNT" grub-install \
     --target=x86_64-efi \
     --efi-directory=/boot \

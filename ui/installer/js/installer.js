@@ -20,7 +20,9 @@ class HATANInstaller {
     this.renderPhases('install-phases-progress', true);
     this.renderCompleteApps();
     this.bindEvents();
-    this.checkRoot();
+    this.checkRoot().then(() => {
+      if (this.liveIso) this.maybeAutoInstall();
+    });
   }
 
   renderStepDots() {
@@ -71,11 +73,49 @@ class HATANInstaller {
       if (this.liveIso) {
         const note = document.getElementById('iso-wipe-note');
         if (note) note.hidden = false;
+        this.isRoot = true;
       }
     } catch {
       this.isRoot = false;
       this.liveIso = false;
     }
+  }
+
+  maybeAutoInstall() {
+    const params = new URLSearchParams(window.location.search);
+    if (!this.liveIso && params.get('autoinstall') !== '1') return;
+
+    const footer = document.querySelector('.installer-footer');
+    const next = document.getElementById('btn-next');
+    if (next) next.style.display = 'none';
+
+    let sec = 8;
+    const banner = document.createElement('p');
+    banner.className = 'auto-install-banner';
+    banner.style.cssText = 'text-align:center;padding:1rem;color:#7ee787;font-size:1.1rem';
+    banner.textContent = `سيبدأ التثبيت تلقائياً خلال ${sec} ثوانٍ...`;
+    document.querySelector('.installer-body')?.prepend(banner);
+
+    const timer = setInterval(() => {
+      sec -= 1;
+      if (sec > 0) {
+        banner.textContent = `سيبدأ التثبيت تلقائياً خلال ${sec} ثوانٍ...`;
+      } else {
+        clearInterval(timer);
+        this.startInstall();
+      }
+    }, 1000);
+
+    const cancel = document.createElement('button');
+    cancel.className = 'btn btn-ghost';
+    cancel.textContent = 'إلغاء';
+    cancel.addEventListener('click', () => {
+      clearInterval(timer);
+      banner.remove();
+      cancel.remove();
+      if (next) next.style.display = 'inline-block';
+    });
+    footer?.prepend(cancel);
   }
 
   buildSummary() {
@@ -147,7 +187,7 @@ class HATANInstaller {
   async next() {
     const current = this.steps[this.stepIndex];
 
-    if (current === 'welcome' && !this.isRoot) {
+    if (current === 'welcome' && !this.isRoot && !this.liveIso) {
       const demo = confirm('هذه معاينة فقط.\nهل تريد المتابعة؟');
       if (!demo) return;
     }

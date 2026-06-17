@@ -19,9 +19,15 @@ systemctl enable NetworkManager.service
 # مثبّت HATAN — يبدأ تلقائياً بعد الإقلاع
 systemctl enable hatan-installer.service
 
-# root بدون كلمة مرور (Arch live standard — للطوارئ)
+# root بدون كلمة مرور — Arch live (للطوارئ والطرفية)
+sed -i 's/^root:[^:]*:/root::/' /etc/shadow
 passwd -d root 2>/dev/null || true
 passwd -u root 2>/dev/null || true
+chmod 600 /etc/shadow
+
+# سكربت تثبيت سريع
+chmod +x /usr/local/bin/hatan-install-now 2>/dev/null || true
+
 mkdir -p /etc/hatan
 echo "1" > /etc/hatan/iso-live
 

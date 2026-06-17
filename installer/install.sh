@@ -108,7 +108,7 @@ if [[ -f /etc/mkinitcpio.conf ]]; then
         sed -i 's/^HOOKS=(base udev)/HOOKS=(base udev plymouth)/' /etc/mkinitcpio.conf 2>/dev/null || \
         warn "أضف plymouth يدوياً إلى HOOKS في /etc/mkinitcpio.conf"
     fi
-    mkinitcpio -P 2>/dev/null || warn "فشل mkinitcpio"
+    mkinitcpio -p linux 2>/dev/null || mkinitcpio -P 2>/dev/null || warn "فشل mkinitcpio"
 fi
 
 # ── 6. الخدمات ─────────────────────────────────────────
