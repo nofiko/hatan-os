@@ -1,25 +1,21 @@
 [Unit]
 Description=HATAN OS Graphical Installer
-Documentation=https://github.com/hatan-os
-After=NetworkManager.service systemd-user-sessions.service
+Documentation=https://github.com/nofiko/hatan-os
+After=local-fs.target
 Wants=NetworkManager.service
-Conflicts=getty@tty1.service
+Before=display-manager.service
 
 [Service]
 Type=simple
+User=root
 Environment=HATAN_ISO_LIVE=1
 Environment=HATAN_PROJECT_DIR=/opt/hatan-os
 Environment=HATAN_INSTALL_PORT=8766
 ExecStart=/opt/hatan-os/scripts/hatan-live-installer.sh
 Restart=on-failure
-RestartSec=3
-StandardInput=tty
+RestartSec=5
 StandardOutput=journal+console
 StandardError=journal+console
-TTYPath=/dev/tty1
-TTYReset=yes
-TTYVHangup=yes
-TTYVTDisallocate=yes
 
 [Install]
 WantedBy=multi-user.target

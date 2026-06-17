@@ -25,6 +25,7 @@ e2fsprogs
 parted
 gptfdisk
 rsync
+sddm
 
 # واجهة المثبّت
 chromium

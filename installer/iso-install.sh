@@ -83,7 +83,7 @@ report_progress "تثبيت Arch الأساسي" 18
 pacstrap "$MNT" \
     base base-devel linux linux-firmware amd-ucode \
     networkmanager sudo grub efibootmgr dosfstools e2fsprogs \
-    pipewire pipewire-pulse wireplumber
+    pipewire pipewire-pulse wireplumber mkinitcpio
 
 genfstab -U "$MNT" >> "$MNT/etc/fstab"
 
@@ -114,6 +114,7 @@ SYNC_PID=$!
 arch-chroot "$MNT" env \
     HATAN_GUI=1 \
     HATAN_NONINTERACTIVE=1 \
+    HATAN_SKIP_MKINITCPIO=1 \
     HATAN_INSTALL_RECOMMENDED="$HATAN_INSTALL_RECOMMENDED" \
     HATAN_USERNAME="$HATAN_USERNAME" \
     HATAN_PROJECT_DIR=/opt/hatan-os \

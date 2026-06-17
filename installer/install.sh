@@ -102,7 +102,7 @@ if command -v plymouth-set-default-theme &>/dev/null; then
     plymouth-set-default-theme -R hatan-os
 fi
 
-if [[ -f /etc/mkinitcpio.conf ]]; then
+if [[ -f /etc/mkinitcpio.conf ]] && [[ "${HATAN_SKIP_MKINITCPIO:-0}" != "1" ]]; then
     if ! grep -q 'plymouth' /etc/mkinitcpio.conf; then
         sed -i 's/^HOOKS=(\(.*\)keyboard)/HOOKS=(\1 plymouth keyboard)/' /etc/mkinitcpio.conf 2>/dev/null || \
         sed -i 's/^HOOKS=(base udev)/HOOKS=(base udev plymouth)/' /etc/mkinitcpio.conf 2>/dev/null || \

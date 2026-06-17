@@ -132,9 +132,10 @@ class InstallerHandler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
 
         if parsed.path == '/api/check':
+            live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
             self.send_json({
-                'root': is_root(),
-                'liveIso': IS_LIVE_ISO,
+                'root': is_root() or live,
+                'liveIso': live,
                 'targetDisk': os.environ.get('HATAN_TARGET_DISK', '/dev/nvme0n1'),
             })
             return
@@ -185,7 +186,8 @@ class InstallerHandler(SimpleHTTPRequestHandler):
         global install_running
 
         if self.path == '/api/install':
-            if not is_root():
+            live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
+            if not is_root() and not live:
                 self.send_json({'error': 'يتطلب صلاحيات root'}, 403)
                 return
             if install_running:

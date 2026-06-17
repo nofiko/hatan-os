@@ -1,4 +1,7 @@
 build/output/
+build/wsl-bootstrap/
+build/iso-profile/airootfs/opt/
+build/iso-build.log
 node_modules/
 __pycache__/
 *.pyc

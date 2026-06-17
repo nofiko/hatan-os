@@ -1,8 +1,6 @@
 #!/bin/bash
 # HATAN OS — تشغيل المثبّت الرسومي تلقائياً من ISO live
 
-set -euo pipefail
-
 HAT_DIR="${HATAN_PROJECT_DIR:-/opt/hatan-os}"
 PORT="${HATAN_INSTALL_PORT:-8766}"
 URL="http://127.0.0.1:${PORT}"
@@ -17,15 +15,11 @@ export HATAN_AUTO_INSTALL="$AUTO_INSTALL"
 
 log() { echo "[hatan-live] $*"; }
 
-# انتظر الشبكة (WiFi)
-for i in $(seq 1 30); do
-    if nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting'; then
-        break
-    fi
+for i in $(seq 1 20); do
+    nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting' && break
     sleep 1
 done
 
-# لوحة لمسية — squeekboard (Wayland، من مستودعات Arch)
 if command -v squeekboard &>/dev/null; then
     export GTK_IM_MODULE=squeekboard
     export QT_IM_MODULE=squeekboard
@@ -34,7 +28,6 @@ if command -v squeekboard &>/dev/null; then
     squeekboard &
 fi
 
-# إيقاف خادم سابق
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 sleep 0.5
 
@@ -44,8 +37,11 @@ SERVER_PID=$!
 sleep 2
 
 if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-    log "ERROR: install server failed"
-    exit 1
+    log "GUI server failed — fallback: run hatan-install-now on tty1"
+    echo ""
+    echo "  HATAN OS: type: hatan-install-now"
+    echo ""
+    exec /sbin/agetty --noclear --autologin root tty1 linux
 fi
 
 [[ "$AUTO_INSTALL" == "1" ]] && URL="${URL}?autoinstall=1"
@@ -63,13 +59,11 @@ CHROMIUM_FLAGS=(
     --disable-infobars
     --noerrdialogs
     --touch-events=enabled
-    --enable-features=TouchpadAndWheelScrollLatching
     --lang=ar
 )
 
 if command -v gamescope &>/dev/null; then
-    exec gamescope -W 1280 -H 800 -f -r 60 -- \
-        "$BROWSER" "${CHROMIUM_FLAGS[@]}"
+    exec gamescope -W 1280 -H 800 -f -r 60 -- "$BROWSER" "${CHROMIUM_FLAGS[@]}"
 else
     exec "$BROWSER" "${CHROMIUM_FLAGS[@]}"
 fi

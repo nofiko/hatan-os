@@ -37,7 +37,8 @@ if [[ -d "$RELENG" ]]; then
     step "دمج ملفات الإقلاع من archiso releng"
     [[ -f "$PROFILE_DIR/bootstrap_packages" ]] || cp "$RELENG/bootstrap_packages" "$PROFILE_DIR/"
     for dir in grub syslinux; do
-        if [[ ! -d "$PROFILE_DIR/$dir" && -d "$RELENG/$dir" ]]; then
+        if [[ -d "$RELENG/$dir" ]]; then
+            rm -rf "$PROFILE_DIR/$dir"
             cp -a "$RELENG/$dir" "$PROFILE_DIR/"
         fi
     done
@@ -51,9 +52,12 @@ rm -rf "$HATAN_IN_ISO"
 mkdir -p "$HATAN_IN_ISO"
 rsync -a \
     --exclude='build/output' \
+    --exclude='build/wsl-bootstrap' \
+    --exclude='build/iso-build.log' \
     --exclude='build/iso-profile/airootfs/opt' \
     --exclude='.git' \
     --exclude='.vscode' \
+    --exclude='agent-tools' \
     "$PROJECT_DIR"/ "$HATAN_IN_ISO/"
 
 chmod +x "$HATAN_IN_ISO/scripts/hatan-live-installer.sh"
