@@ -21,11 +21,13 @@ for i in $(seq 1 30); do
     sleep 1
 done
 
-# لوحة لمسية — wvkbd (Wayland)
-if command -v wvkbd-mobintl &>/dev/null; then
-    wvkbd-mobintl -L 400 --font "Noto Sans Arabic 18" &
-elif command -v wvkbd &>/dev/null; then
-    wvkbd &
+# لوحة لمسية — squeekboard (Wayland، من مستودعات Arch)
+if command -v squeekboard &>/dev/null; then
+    export GTK_IM_MODULE=squeekboard
+    export QT_IM_MODULE=squeekboard
+    export XMODIFIERS=@im=squeekboard
+    eval "$(dbus-launch --sh-syntax)" 2>/dev/null || true
+    squeekboard &
 fi
 
 # إيقاف خادم سابق
@@ -48,6 +50,8 @@ command -v chromium &>/dev/null || BROWSER="firefox"
 CHROMIUM_FLAGS=(
     --kiosk
     "--app=$URL"
+    --ozone-platform=wayland
+    --enable-wayland-ime
     --disable-translate
     --no-first-run
     --disable-infobars

@@ -31,10 +31,9 @@ mesa
 pipewire
 pipewire-pulse
 wireplumber
-wvkbd
+squeekboard
 ttf-dejavu
 noto-fonts
-noto-fonts-arabic
 
 # أدوات
 sudo
