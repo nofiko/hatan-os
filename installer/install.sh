@@ -79,7 +79,6 @@ pacman -Sy --noconfirm
 
 # ── 3. تثبيت الحزم الأساسية (Steam Deck) ───────────────
 report_progress "تثبيت تعريفات Valve" 20
-chmod +x "$HAT_DIR/scripts/install-deck-packages.sh"
 bash "$HAT_DIR/scripts/install-deck-packages.sh" "$HAT_DIR/base/packages/essential.txt"
 
 # ── 3b. التطبيقات الافتراضية ───────────────────────────
