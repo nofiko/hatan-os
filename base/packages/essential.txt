@@ -38,17 +38,17 @@ jupiter-main/bluez
 jupiter-main/bluez-plugins
 jupiter-main/bluez-utils
 
-# أدوات أساسية
+# أدوات أساسية (Python يُثبَّت عبر scripts/install-deck-packages.sh)
 base
 base-devel
 sudo
 networkmanager
+iwd
 pipewire
 pipewire-pulse
 pipewire-alsa
 pipewire-jack
 lib32-pipewire
-python313
 chromium
 efibootmgr
 grub

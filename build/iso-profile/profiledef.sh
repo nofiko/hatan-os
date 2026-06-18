@@ -19,6 +19,7 @@ file_permissions=(
   ["/root"]="0:0:750"
   ["/root/customize_airootfs.sh"]="0:0:755"
   ["/opt/hatan-os/scripts/hatan-live-installer.sh"]="0:0:755"
+  ["/opt/hatan-os/scripts/install-deck-packages.sh"]="0:0:755"
   ["/opt/hatan-os/installer/install.sh"]="0:0:755"
   ["/opt/hatan-os/installer/iso-install.sh"]="0:0:755"
   ["/opt/hatan-os/installer/hat-install.sh"]="0:0:755"

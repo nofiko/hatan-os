@@ -87,7 +87,7 @@ cp /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/mirrorlist" 2>/dev/null || true
 pacstrap "$MNT" \
     base linux-neptune linux-firmware-neptune amd-ucode \
     networkmanager iwd sudo grub efibootmgr dosfstools e2fsprogs \
-    pipewire pipewire-pulse wireplumber mkinitcpio
+    pipewire pipewire-pulse wireplumber steamdeck-dsp mkinitcpio iptables
 
 genfstab -U "$MNT" >> "$MNT/etc/fstab"
 

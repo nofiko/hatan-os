@@ -58,7 +58,7 @@ chmod +x "$HAT_DIR/ui/shell/hat_api.py"
 chmod +x "$HAT_DIR/ui/boot/hatan-boot.sh" 2>/dev/null || true
 chmod +x "$HAT_DIR/ui/boot/boot-server.py" 2>/dev/null || true
 chmod +x "$HAT_DIR/ui/boot/scripts/"*.sh 2>/dev/null || true
-chmod +x "$HAT_DIR/scripts/sync-assets.sh"
+chmod +x "$HAT_DIR/scripts/install-deck-packages.sh"
 chmod +x "$HAT_DIR/scripts/install-default-apps.sh"
 chmod +x "$HAT_DIR/scripts/hat-capture-daemon.py"
 chmod +x "$HAT_DIR/scripts/hat-record-toggle.sh"
@@ -77,12 +77,10 @@ report_progress "إعداد مستودعات Valve" 12
 cp "$HAT_DIR/base/pacman.conf" /etc/pacman.conf
 pacman -Sy --noconfirm
 
-# ── 3. تثبيت الحزم الأساسية ────────────────────────────
+# ── 3. تثبيت الحزم الأساسية (Steam Deck) ───────────────
 report_progress "تثبيت تعريفات Valve" 20
-while IFS= read -r pkg; do
-    [[ -z "$pkg" || "$pkg" =~ ^# ]] && continue
-    pacman -S --noconfirm "$pkg" || warn "فشل: $pkg"
-done < "$HAT_DIR/base/packages/essential.txt"
+chmod +x "$HAT_DIR/scripts/install-deck-packages.sh"
+bash "$HAT_DIR/scripts/install-deck-packages.sh" "$HAT_DIR/base/packages/essential.txt"
 
 # ── 3b. التطبيقات الافتراضية ───────────────────────────
 report_progress "تثبيت التطبيقات الافتراضية" 45

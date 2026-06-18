@@ -61,6 +61,7 @@ rsync -a \
     "$PROJECT_DIR"/ "$HATAN_IN_ISO/"
 
 chmod +x "$HATAN_IN_ISO/scripts/hatan-live-installer.sh"
+chmod +x "$HATAN_IN_ISO/scripts/install-deck-packages.sh"
 chmod +x "$HATAN_IN_ISO/installer/"*.sh
 chmod +x "$HATAN_IN_ISO/installer/install-server.py"
 
