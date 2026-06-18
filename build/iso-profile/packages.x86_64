@@ -35,7 +35,7 @@ rsync
 # رسوميات Deck
 mesa
 gamescope
-xorg-xwayland-jupiter
+xorg-xwayland
 pipewire
 pipewire-pulse
 wireplumber
