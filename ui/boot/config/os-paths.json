@@ -4,8 +4,8 @@
     "setup": "D:\\setup.exe"
   },
   "steam": {
-    "partsets": "G:\\SteamOS\\partsets",
-    "efi": "G:\\EFI\\steamos\\grubx64.efi"
+    "partsets": "",
+    "efi": ""
   },
-  "hatan_project": "G:\\hatan-os"
+  "hatan_project": ""
 }

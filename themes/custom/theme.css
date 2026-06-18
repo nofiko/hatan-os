@@ -1,10 +1,27 @@
-/* HATAN OS - ثيم */
+/* HATAN OS — ثيم الألوان */
 
 :root {
-  --primary: #2563EB;
-  --primary-bright: #3B82F6;
-  --electric: #22D3EE;
+  /* أساس */
+  --background: #0a0e14;
+  --surface: #121820;
+  --surface-raised: #1a2230;
+  --text: #f0f4f8;
+  --text-muted: #8b9cb3;
+  --border: rgba(34, 211, 238, 0.15);
+
+  /* ألوان العلامة */
+  --primary: #2563eb;
+  --primary-bright: #3b82f6;
+  --electric: #22d3ee;
+  --accent-red: #c41e3a;
+  --glow: rgba(34, 211, 238, 0.45);
   --glow-primary: rgba(37, 99, 235, 0.55);
+  --glow-red: rgba(196, 30, 58, 0.55);
+
+  /* شكل */
+  --border-radius: 12px;
+
+  /* حركة */
   --ease-magic: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-dramatic: cubic-bezier(0.16, 1, 0.3, 1);
   --zoom-far: 2.85;
