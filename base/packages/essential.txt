@@ -16,7 +16,7 @@ jupiter-main/steamdeck-dsp
 # الرسوميات
 jupiter-main/mesa
 jupiter-main/gamescope
-jupiter-main/xorg-xwayland-jupiter
+jupiter-main/xorg-xwayland
 jupiter-main/vpower
 
 # الصوت
