@@ -66,11 +66,14 @@ build-iso.bat
 
 ## استخدام ISO على Steam Deck
 
-1. انسخ ISO إلى USB بـ **Balena Etcher** أو **Rufus**
-2. أدخل USB في Deck
+1. انسخ ISO إلى USB بـ **Balena Etcher** (مُفضّل) أو **Rufus**
+   - في Rufus: اختر **DD image mode** وليس ISO mode
+   - لا تنسخ الملف داخل فلاش كملف عادي — يجب **حرق** الصورة
+2. أدخل USB في Deck (يفضّل منفذ USB-C مباشر)
 3. **Volume+ + Power** → **Boot Manager** → USB
-4. التثبيت يبدأ **تلقائياً** (30–60 دقيقة)
-5. أزل USB → `reboot`
+4. إن ظهر خطأ **Switch Root** اختر **HATAN OS — Safe Boot (USB)**
+5. التثبيت يبدأ تلقائياً أو من واجهة HATAN (30–60 دقيقة)
+6. أزل USB → `reboot`
 
 ---
 
