@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Windows Apps
+Name[ar]=ملفات EXE
+Comment=Run Windows .exe applications
+Comment[ar]=تشغيل برامج Windows
+Exec=lutris
+Icon=lutris
+Terminal=false
+Type=Application
+Categories=Game;Emulator;
+StartupNotify=true

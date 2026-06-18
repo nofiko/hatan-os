@@ -1,0 +1,11 @@
+{
+  "windows": {
+    "source": "/var/lib/hatan/iso/windows",
+    "setup": "/var/lib/hatan/iso/windows/setup.exe"
+  },
+  "steam": {
+    "partsets": "/opt/hatan-os/media-ref/steamos/partsets",
+    "efi": "/opt/hatan-os/media-ref/efi-steamos/grubx64.efi"
+  },
+  "hatan_project": "/opt/hatan-os"
+}

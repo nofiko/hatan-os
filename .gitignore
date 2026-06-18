@@ -1,0 +1,18 @@
+# Build
+build/output/
+build/iso-work/
+
+# ISO files (large)
+*.iso
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+/tmp/
+*.log

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, viewport-fit=cover">
+  <title>HATAN OS</title>
+  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/splash.css">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- تنبيه ثابت: واي فاي / بطارية -->
+  <div class="status-alert" id="status-alert" role="alert" aria-live="polite">
+    <span class="status-alert-dot" aria-hidden="true"></span>
+    <span id="status-alert-text"></span>
+  </div>
+
+  <!-- شريط البطارية والواي فاي -->
+  <div class="status-tray" id="status-tray">
+    <button type="button" class="status-chip status-chip--wifi" id="status-wifi" aria-label="الواي فاي">
+      <svg class="status-icon status-icon--wifi" id="wifi-icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path class="wifi-bar wifi-bar--3" d="M12 20a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3Z"/>
+        <path class="wifi-bar wifi-bar--2" d="M7.05 14.54a6 6 0 0 1 8.9 0"/>
+        <path class="wifi-bar wifi-bar--1" d="M3.05 10.54a11 11 0 0 1 17.9 0"/>
+      </svg>
+      <span class="status-chip-label" id="wifi-label">غير متصل</span>
+    </button>
+    <button type="button" class="status-chip status-chip--battery" id="status-battery" aria-label="البطارية" tabindex="-1">
+      <svg class="status-icon status-icon--battery" id="battery-icon" viewBox="0 0 28 16" aria-hidden="true">
+        <rect class="battery-body" x="1" y="2" width="22" height="12" rx="2"/>
+        <rect class="battery-cap" x="23" y="5.5" width="3" height="5" rx="1"/>
+        <rect class="battery-fill" id="battery-fill" x="2.5" y="3.5" height="9" rx="1"/>
+        <path class="battery-bolt" d="M14 4.5 11 9h3l-2 4.5 5-6h-3l2-3Z"/>
+      </svg>
+      <span class="status-chip-label" id="battery-label">—</span>
+    </button>
+  </div>
+
+  <div class="wifi-panel-backdrop" id="wifi-panel-backdrop"></div>
+  <div class="wifi-panel" id="wifi-panel" role="dialog" aria-labelledby="wifi-panel-title">
+    <div class="wifi-panel-header">
+      <h2 class="wifi-panel-title" id="wifi-panel-title">الاتصال بالواي فاي</h2>
+      <button type="button" class="wifi-panel-close" id="wifi-panel-close" aria-label="إغلاق">×</button>
+    </div>
+    <div class="wifi-panel-toolbar">
+      <button type="button" class="wifi-scan-btn" id="wifi-scan-btn">بحث عن شبكات</button>
+    </div>
+    <p class="wifi-panel-status" id="wifi-panel-status"></p>
+    <div class="wifi-network-list" id="wifi-network-list"></div>
+    <div class="wifi-connect-form" id="wifi-connect-form">
+      <p class="wifi-connect-label">الاتصال بـ <strong id="wifi-connect-ssid"></strong></p>
+      <input type="password" class="wifi-connect-input" id="wifi-connect-pass" placeholder="كلمة المرور" autocomplete="off">
+      <div class="wifi-connect-actions">
+        <button type="button" class="wifi-connect-back" id="wifi-connect-back">رجوع</button>
+        <button type="button" class="wifi-connect-btn" id="wifi-connect-btn">اتصال</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 1: شعار + startup-sound -->
+  <div class="boot-splash" id="boot-splash">
+    <div class="boot-splash-bg" aria-hidden="true">
+      <div class="boot-aura boot-aura--1"></div>
+      <div class="boot-aura boot-aura--2"></div>
+      <div class="boot-aura boot-aura--3"></div>
+      <div class="boot-ring boot-ring--1"></div>
+      <div class="boot-ring boot-ring--2"></div>
+      <div class="boot-ring boot-ring--3"></div>
+      <div class="boot-particles" id="boot-particles" aria-hidden="true"></div>
+      <div class="boot-scan-line" aria-hidden="true"></div>
+    </div>
+    <div class="boot-logo-wrap">
+      <div class="boot-logo-glow" aria-hidden="true"></div>
+      <img src="assets/logo.png" alt="HATAN OS" class="boot-splash-img">
+    </div>
+    <div class="boot-splash-loader"><span class="boot-loader-bar"></span></div>
+    <div class="boot-splash-version" id="boot-version">HATAN OS</div>
+  </div>
+
+  <div class="transition-flash" id="transition-flash" aria-hidden="true"></div>
+
+  <div class="shell" id="shell">
+    <div class="welcome-screen">
+      <!-- 2: مرحباً -->
+      <h1 class="welcome-text" id="welcome-text">مرحباً</h1>
+
+      <!-- 3: شبكة 3D دوّارة + اضغط هنا -->
+      <canvas id="network-canvas" class="network-canvas"></canvas>
+
+      <div class="open-prompt-wrap" id="open-prompt-wrap">
+        <div class="nfc-hub" id="nfc-hub">
+          <div class="nfc-clear"></div>
+          <svg class="nfc-svg" viewBox="0 0 280 280" aria-hidden="true">
+            <circle class="nfc-orbit nfc-orbit-1" cx="140" cy="140" r="118"/>
+            <circle class="nfc-orbit nfc-orbit-2" cx="140" cy="140" r="108"/>
+            <circle class="nfc-orbit nfc-orbit-3" cx="140" cy="140" r="98"/>
+            <g class="nfc-waves" transform="translate(140,140)">
+              <g class="nfc-sector" transform="rotate(0)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(45)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(90)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(135)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(180)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(225)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(270)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+              <g class="nfc-sector" transform="rotate(315)"><path class="nfc-wave w1" d="M -16 88 A 16 16 0 0 1 16 88"/><path class="nfc-wave w2" d="M -26 88 A 26 26 0 0 1 26 88"/><path class="nfc-wave w3" d="M -36 88 A 36 36 0 0 1 36 88"/></g>
+            </g>
+            <circle class="nfc-pulse-ring" cx="140" cy="140" r="115"/>
+            <circle class="nfc-pulse-ring nfc-delay" cx="140" cy="140" r="115"/>
+          </svg>
+          <button class="open-prompt" id="open-prompt">اضغط هنا</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4: خلفية 3D + اختيار النظام -->
+  <div class="phase-ambient" id="phase-ambient">
+    <canvas id="ambient-canvas" class="ambient-canvas"></canvas>
+    <div class="ambient-vignette" aria-hidden="true"></div>
+
+    <div class="os-picker" id="os-picker">
+      <div class="picker-title-3d" id="picker-title-3d" aria-hidden="true">
+        <span class="picker-title-layer picker-title-layer--deep">اختار النظام</span>
+        <span class="picker-title-layer picker-title-layer--mid">اختار النظام</span>
+        <span class="picker-title-layer picker-title-layer--front">اختار النظام</span>
+      </div>
+      <p class="picker-title-sr">اختار النظام</p>
+
+      <div class="picker-options">
+        <button type="button" class="os-choice" data-os="windows" id="choice-windows">
+          <span class="os-choice-shine" aria-hidden="true"></span>
+          <span class="os-badge" id="badge-windows">...</span>
+          <img src="assets/windows.png" alt="" class="os-icon" width="96" height="96">
+          <span class="os-label">Windows</span>
+        </button>
+        <button type="button" class="os-choice" data-os="steam" id="choice-steam">
+          <span class="os-choice-shine" aria-hidden="true"></span>
+          <span class="os-badge" id="badge-steam">...</span>
+          <img src="assets/steam.png" alt="" class="os-icon" width="96" height="96">
+          <span class="os-label">SteamOS</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="os-action-overlay" id="os-action-overlay" aria-hidden="true">
+    <div class="os-action-card">
+      <div class="os-action-spinner" aria-hidden="true"></div>
+      <h2 class="os-action-title" id="os-action-title"></h2>
+      <p class="os-action-message" id="os-action-message"></p>
+      <div class="os-action-progress" aria-hidden="true">
+        <span class="os-action-bar" id="os-action-bar"></span>
+      </div>
+    </div>
+  </div>
+
+  <audio id="startup-sound" src="assets/audio/startup-sound.mp3" preload="auto"></audio>
+  <audio id="welcome-sound" src="assets/audio/welcom.mp3" preload="auto"></audio>
+  <audio id="press-music" src="assets/audio/press-music.mp3" preload="auto" loop></audio>
+  <audio id="select-sound" src="assets/audio/select.mp3" preload="auto"></audio>
+  <audio id="dis-sound" src="assets/audio/DIS.mp3" preload="auto"></audio>
+
+  <script src="js/config.js"></script>
+  <script src="js/system-status.js"></script>
+  <script src="js/os-launcher.js"></script>
+  <script src="js/network-mesh.js"></script>
+  <script src="js/ambient-scene.js"></script>
+  <script src="js/splash.js"></script>
+</body>
+</html>

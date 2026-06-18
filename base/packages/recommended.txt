@@ -1,0 +1,28 @@
+# HATAN OS - حزم موصى بها
+
+# أداء الألعاب
+jupiter-main/mangohud
+jupiter-main/lib32-mangohud
+
+# يد تحكم Xbox
+holo-main/xone-dkms-git
+holo-main/xow-git
+
+# أدوات مفيدة
+htop
+nano
+git
+wget
+curl
+unzip
+chromium
+
+# HATAN Shell dependencies
+nodejs
+npm
+plymouth
+
+# تصوير الشاشة
+wf-recorder
+grim
+ffmpeg

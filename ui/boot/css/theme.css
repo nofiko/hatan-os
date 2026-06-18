@@ -1,0 +1,11 @@
+/* HATAN OS - ثيم */
+
+:root {
+  --primary: #2563EB;
+  --primary-bright: #3B82F6;
+  --electric: #22D3EE;
+  --glow-primary: rgba(37, 99, 235, 0.55);
+  --ease-magic: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-dramatic: cubic-bezier(0.16, 1, 0.3, 1);
+  --zoom-far: 2.85;
+}

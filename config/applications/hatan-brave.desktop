@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Brave
+Name[ar]=براف
+Comment=Brave web browser
+Exec=flatpak run com.brave.Browser
+Icon=com.brave.Browser
+Terminal=false
+Type=Application
+Categories=Network;WebBrowser;
+StartupNotify=true

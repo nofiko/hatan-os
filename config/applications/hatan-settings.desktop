@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Settings
+Name[ar]=الإعدادات
+Comment=Device settings
+Comment[ar]=إعدادات الجهاز الكاملة
+Exec=systemsettings
+Icon=preferences-system
+Terminal=false
+Type=Application
+Categories=Settings;
+StartupNotify=true

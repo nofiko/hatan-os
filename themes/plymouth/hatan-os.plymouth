@@ -1,0 +1,10 @@
+[Plymouth Theme]
+Name=HATAN OS
+Description=HATAN OS boot splash
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/hatan-os
+ScriptDir=/usr/share/plymouth/themes/hatan-os
+ConsoleLogBackgroundColor=0x020818
+ConsoleLogForegroundColor=0x22D3EE

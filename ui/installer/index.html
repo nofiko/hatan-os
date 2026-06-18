@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, height=800, initial-scale=1.0">
+  <title>HATAN OS — التثبيت</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/boot.png" type="image/png">
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="installer">
+    <header class="installer-header">
+      <div class="installer-logo">
+        <img src="assets/boot.png" alt="HATAN OS">
+        <div>
+          <h1 id="installer-title">HATAN OS</h1>
+          <span>تثبيت النظام</span>
+        </div>
+      </div>
+      <div class="step-indicator" id="step-indicator"></div>
+    </header>
+
+    <main class="installer-body">
+
+      <!-- 1. ترحيب -->
+      <section class="screen active welcome-only" id="screen-welcome">
+        <h2 class="brand-title" id="brand-title">نظام هتان || HATAN OS</h2>
+        <p class="brand-desc" id="brand-desc">هو نظام خفيف خاص بجهاز steam deck</p>
+      </section>
+
+      <!-- 2. تأكيد -->
+      <section class="screen" id="screen-confirm">
+        <h2 class="screen-title">هل أنت مستعد؟</h2>
+        <div class="warning-box" id="warning-box">
+          <strong>مهم:</strong>
+          لا تُطفئ الجهاز أثناء التثبيت. قد يستغرق الأمر 30–60 دقيقة.
+        </div>
+        <ul class="feature-list simple" id="confirm-summary"></ul>
+      </section>
+
+      <!-- 3. التقدّم -->
+      <section class="screen progress-only" id="screen-progress">
+        <div class="install-phases active-track" id="install-phases-progress"></div>
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progress-fill"></div>
+          </div>
+          <div class="progress-label">
+            <span id="progress-pct">0%</span>
+            <span>لا تُغلق هذه الشاشة</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. اكتمال -->
+      <section class="screen" id="screen-complete">
+        <div class="complete-icon">✓</div>
+        <h2 class="screen-title">تم التثبيت بنجاح</h2>
+        <p class="screen-desc">HATAN OS جاهز الآن. أعد تشغيل الجهاز للبدء.</p>
+        <div class="apps-grid compact" id="complete-apps"></div>
+      </section>
+
+    </main>
+
+    <footer class="installer-footer">
+      <button class="btn btn-ghost" id="btn-back" disabled>رجوع</button>
+      <button class="btn btn-primary" id="btn-next">التالي</button>
+    </footer>
+  </div>
+
+  <script src="js/config.js"></script>
+  <script src="js/installer.js"></script>
+</body>
+</html>

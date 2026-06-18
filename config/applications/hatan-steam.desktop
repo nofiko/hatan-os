@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Steam
+Name[ar]=ستيم
+Comment=Steam gaming platform
+Exec=steam
+Icon=steam
+Terminal=false
+Type=Application
+Categories=Game;
+StartupNotify=true

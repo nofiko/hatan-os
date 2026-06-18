@@ -1,0 +1,32 @@
+{
+  "deviceName": "Steam Deck",
+  "wallpaper": "default",
+  "volume": 75,
+  "brightness": 80,
+  "theme": "hatan",
+  "language": "ar",
+  "keyboard": "ar",
+  "keyboardLayouts": ["ar", "us"],
+  "buttonMap": {
+    "A": "confirm",
+    "B": "back",
+    "X": "options",
+    "Y": "toggle-wifi",
+    "L1": "volume-down",
+    "R1": "volume-up",
+    "L2": "brightness-down",
+    "R2": "brightness-up",
+    "L3": "log-usage",
+    "R3": "toggle-keyboard",
+    "L4": "log-usage",
+    "R4": "screenshot",
+    "SELECT": "none",
+    "START": "open-settings",
+    "STEAM": "home",
+    "QAM": "options",
+    "DPAD_UP": "none",
+    "DPAD_DOWN": "none",
+    "DPAD_LEFT": "none",
+    "DPAD_RIGHT": "none"
+  }
+}

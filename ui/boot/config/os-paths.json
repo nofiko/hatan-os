@@ -1,0 +1,11 @@
+{
+  "windows": {
+    "source": "D:\\",
+    "setup": "D:\\setup.exe"
+  },
+  "steam": {
+    "partsets": "G:\\SteamOS\\partsets",
+    "efi": "G:\\EFI\\steamos\\grubx64.efi"
+  },
+  "hatan_project": "G:\\hatan-os"
+}

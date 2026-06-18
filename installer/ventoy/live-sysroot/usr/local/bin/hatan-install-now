@@ -1,0 +1,67 @@
+#!/bin/bash
+# One-command launcher for HATAN installer from Arch live.
+
+set -euo pipefail
+
+LOG="/tmp/hatan-install-now.log"
+exec > >(tee -a "$LOG") 2>&1
+
+echo "[hatan] launcher started: $(date)"
+
+find_hatan_project() {
+    local p
+    local candidates=(
+        "/opt/hatan-os"
+        "/run/archiso/bootmnt/hatan-os"
+        "/mnt/usb/hatan-os"
+    )
+
+    for p in "${candidates[@]}"; do
+        if [[ -f "$p/installer/live-install.sh" ]]; then
+            echo "$p"
+            return 0
+        fi
+    done
+
+    mkdir -p /mnt/usb
+    for dev in /dev/disk/by-label/Ventoy /dev/disk/by-label/HATAN_OS /dev/sd?1 /dev/sd?2 /dev/sd?3; do
+        [[ -e "$dev" ]] || continue
+        umount /mnt/usb 2>/dev/null || true
+        mount -o ro "$dev" /mnt/usb 2>/dev/null || continue
+        if [[ -f "/mnt/usb/hatan-os/installer/live-install.sh" ]]; then
+            echo "/mnt/usb/hatan-os"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+if ! ping -c1 -W2 archlinux.org >/dev/null 2>&1; then
+    echo "[hatan] internet is not connected."
+    echo "[hatan] connect wifi first with:"
+    echo "  iwctl"
+    echo "  station wlan0 scan"
+    echo "  station wlan0 get-networks"
+    echo "  station wlan0 connect \"SSID\""
+    echo "  exit"
+    exit 1
+fi
+
+HATAN_PROJECT_DIR="$(find_hatan_project || true)"
+if [[ -z "${HATAN_PROJECT_DIR:-}" ]]; then
+    echo "[hatan] hatan-os not found on USB."
+    exit 1
+fi
+
+echo "[hatan] project: $HATAN_PROJECT_DIR"
+
+sed -i 's/\r$//' "$HATAN_PROJECT_DIR/installer/live-install.sh" || true
+chmod +x "$HATAN_PROJECT_DIR/installer/live-install.sh"
+
+export HATAN_PROJECT_DIR
+export HATAN_NONINTERACTIVE=1
+export HATAN_INSTALL_RECOMMENDED=0
+export HATAN_TARGET_DISK="${HATAN_TARGET_DISK:-/dev/nvme0n1}"
+
+exec bash "$HATAN_PROJECT_DIR/installer/live-install.sh"

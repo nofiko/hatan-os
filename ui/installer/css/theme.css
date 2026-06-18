@@ -1,0 +1,22 @@
+/* HATAN OS - ثيم أزرق ثلاثي الأبعاد */
+
+:root {
+  --primary: #2563EB;
+  --primary-bright: #3B82F6;
+  --primary-deep: #1E40AF;
+  --electric: #22D3EE;
+  --electric-dim: #0891B2;
+  --circuit: #0F2847;
+  --trace: #38BDF8;
+  --background: #020818;
+  --surface: #0A1224;
+  --surface-hover: #101C34;
+  --text: #E8F4FF;
+  --text-muted: #5A8AAA;
+  --accent: #2563EB;
+  --border-radius: 8px;
+  --font: 'Share Tech Mono', 'Cairo', monospace;
+  --glow: rgba(34, 211, 238, 0.45);
+  --glow-primary: rgba(37, 99, 235, 0.55);
+  --glow-red: rgba(37, 99, 235, 0.5);
+}

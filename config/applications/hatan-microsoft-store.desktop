@@ -1,0 +1,10 @@
+[Desktop Entry]
+Name=Microsoft Store
+Name[ar]=متجر Microsoft
+Comment=Microsoft Store and Xbox Game Pass
+Exec=flatpak run com.microsoft.Edge --new-window https://apps.microsoft.com/store/apps
+Icon=com.microsoft.Edge
+Terminal=false
+Type=Application
+Categories=Network;Game;
+StartupNotify=true
