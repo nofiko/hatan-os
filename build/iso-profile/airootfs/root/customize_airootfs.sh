@@ -3,8 +3,14 @@
 
 echo "HATAN OS: customizing airootfs for Steam Deck..."
 
-# كلمة مرور live (تجنّب emergency من root الفارغ على Deck)
 echo 'root:hatan' | chpasswd 2>/dev/null || true
+
+# روابط نواة archiso القياسية (احتياط)
+for kdir in /boot /boot/x86_64; do
+    [[ -d "$kdir" ]] || continue
+    [[ -e "$kdir/vmlinuz-linux-neptune" ]] && ln -sfn vmlinuz-linux-neptune "$kdir/vmlinuz-linux"
+    [[ -e "$kdir/initramfs-linux-neptune.img" ]] && ln -sfn initramfs-linux-neptune.img "$kdir/initramfs-linux.img"
+done
 
 grep -q 'en_US.UTF-8' /etc/locale.gen 2>/dev/null || echo 'en_US.UTF-8 UTF-8' >> /etc/locale.gen
 grep -q 'ar_SA.UTF-8' /etc/locale.gen 2>/dev/null || echo 'ar_SA.UTF-8 UTF-8' >> /etc/locale.gen
@@ -15,7 +21,7 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime 2>/dev/null || true
 
 systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable iwd.service 2>/dev/null || true
-systemctl enable hatan-installer.service 2>/dev/null || true
+systemctl enable getty@tty1.service 2>/dev/null || true
 
 mkdir -p /etc/hatan
 echo '1' > /etc/hatan/iso-live

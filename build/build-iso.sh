@@ -34,14 +34,8 @@ command -v mkarchiso &>/dev/null || {
 
 RELENG="/usr/share/archiso/configs/releng"
 if [[ -d "$RELENG" ]]; then
-    step "دمج ملفات الإقلاع من archiso releng"
+    step "نسخ bootstrap من archiso releng"
     [[ -f "$PROFILE_DIR/bootstrap_packages" ]] || cp "$RELENG/bootstrap_packages" "$PROFILE_DIR/"
-    for dir in grub syslinux; do
-        if [[ -d "$RELENG/$dir" ]]; then
-            rm -rf "$PROFILE_DIR/$dir"
-            cp -a "$RELENG/$dir" "$PROFILE_DIR/"
-        fi
-    done
 fi
 
 step "مزامنة الأصول"

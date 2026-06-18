@@ -25,7 +25,7 @@ permissions:
 jobs:
   build-iso:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    timeout-minutes: 120
     container:
       image: archlinux:latest
       options: --privileged

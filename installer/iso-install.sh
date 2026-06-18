@@ -143,9 +143,9 @@ arch-chroot "$MNT" bash -c '
     mkdir -p /etc/cmdline.d
 '
 
-arch-chroot "$MNT" bash -c "echo 'root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes' > /etc/cmdline.d/00-root.conf"
-arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes\"|" /etc/default/grub 2>/dev/null || \
-    arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes\"' >> /etc/default/grub"
+arch-chroot "$MNT" bash -c "echo 'root=UUID=${ROOT_UUID} rw amd_iommu=off amdgpu.dc=1 rd.systemd.gpt_auto=no nvme_load=yes' > /etc/cmdline.d/00-root.conf"
+arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amd_iommu=off amdgpu.dc=1 rd.systemd.gpt_auto=no nvme_load=yes\"|" /etc/default/grub 2>/dev/null || \
+    arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amd_iommu=off amdgpu.dc=1 rd.systemd.gpt_auto=no nvme_load=yes\"' >> /etc/default/grub"
 arch-chroot "$MNT" mkinitcpio -p linux-neptune 2>/dev/null || arch-chroot "$MNT" mkinitcpio -P 2>/dev/null || true
 
 arch-chroot "$MNT" grub-install \

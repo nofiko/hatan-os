@@ -1,6 +1,6 @@
 #!/bin/bash
 # HATAN OS — تثبيت حزم Steam Deck / Valve مع معالجة تعارض Python
-set -euo pipefail
+set -uo pipefail
 
 PKG_FILE="${1:?package list file}"
 RED='\033[0;31m'
