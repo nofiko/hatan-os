@@ -38,7 +38,7 @@ jobs:
         run: |
           pacman-key --init
           pacman-key --populate archlinux
-          pacman -Syu --noconfirm archiso rsync git base-devel systemd
+          pacman -Syu --noconfirm archiso rsync git base-devel systemd grub mtools dosfstools
 
       - name: Build ISO
         run: |
