@@ -5,7 +5,7 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$Username,
 
-    [string]$RepoName = 'HATAN-OS',
+    [string]$RepoName = 'hatan-os',
     [ValidateSet('public', 'private')]
     [string]$Visibility = 'public'
 )
@@ -48,11 +48,7 @@ $env:GIT_COMMITTER_EMAIL = 'hatan-os@users.noreply.github.com'
 git add -A
 $status = git status --porcelain
 if ($status) {
-    git commit -m "$(cat @'
-Prepare HATAN OS for Steam Deck with boot UI, dual-boot, and GitHub ISO build.
-
-EOF
-'@)"
+    git commit -m "Prepare HATAN OS for Steam Deck with boot UI, dual-boot, and GitHub ISO build."
     Write-Host "  [OK] Git commit created" -ForegroundColor Green
 } else {
     Write-Host "  [OK] Nothing new to commit" -ForegroundColor Green
