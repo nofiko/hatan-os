@@ -48,8 +48,7 @@ pipewire-pulse
 pipewire-alsa
 pipewire-jack
 lib32-pipewire
-python
-python-pip
+python313
 chromium
 efibootmgr
 grub

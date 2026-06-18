@@ -65,6 +65,7 @@ chmod +x "$HATAN_IN_ISO/installer/"*.sh
 chmod +x "$HATAN_IN_ISO/installer/install-server.py"
 
 mkdir -p "$OUTPUT_DIR/work"
+export PACMAN_OPTS="--noconfirm --needed"
 step "بناء ISO (قد يستغرق 15–30 دقيقة)..."
 
 cd "$PROFILE_DIR"

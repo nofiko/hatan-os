@@ -1,4 +1,5 @@
 # HATAN OS live ISO — Steam Deck LCD
+# حزم Jupiter الثقيلة (jupiter-hw-support…) تُثبَّت على القرص عبر install.sh
 
 # أساس + نواة Deck
 base
@@ -9,10 +10,7 @@ mkinitcpio
 mkinitcpio-archiso
 squashfs-tools
 
-# تعريفات Steam Deck
-jupiter-hw-support
-jupiter-legacy-support
-jupiter-fan-control
+# صوت Deck
 steamdeck-dsp
 
 # شبكة
@@ -21,6 +19,7 @@ iwd
 iw
 wpa_supplicant
 reflector
+iptables
 
 # تثبيت على القرص
 arch-install-scripts
@@ -46,10 +45,10 @@ squeekboard
 ttf-dejavu
 noto-fonts
 
-# أدوات
+# أدوات (python313 — Jupiter يتطلب python<3.14)
 sudo
 bash
-python
+python313
 nano
 curl
 wget
