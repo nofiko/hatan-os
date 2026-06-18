@@ -1,5 +1,5 @@
 #!/bin/bash
-# HATAN OS — تشغيل المثبّت الرسومي تلقائياً من ISO live
+# HATAN OS — تشغيل المثبّت الرسومي تلقائياً من ISO live (Steam Deck)
 
 HAT_DIR="${HATAN_PROJECT_DIR:-/opt/hatan-os}"
 PORT="${HATAN_INSTALL_PORT:-8766}"
@@ -15,7 +15,8 @@ export HATAN_AUTO_INSTALL="$AUTO_INSTALL"
 
 log() { echo "[hatan-live] $*"; }
 
-for i in $(seq 1 20); do
+# انتظار الشبكة (Wi‑Fi Deck)
+for i in $(seq 1 30); do
     nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting' && break
     sleep 1
 done
@@ -37,11 +38,11 @@ SERVER_PID=$!
 sleep 2
 
 if ! kill -0 "$SERVER_PID" 2>/dev/null; then
-    log "GUI server failed — fallback: run hatan-install-now on tty1"
+    log "GUI server failed — run: hatan-install-now (root / hatan)"
     echo ""
-    echo "  HATAN OS: type: hatan-install-now"
+    echo "  HATAN OS — root:hatan  |  hatan-install-now"
     echo ""
-    exec /sbin/agetty --noclear --autologin root tty1 linux
+    exec /sbin/agetty --noclear tty1 linux
 fi
 
 [[ "$AUTO_INSTALL" == "1" ]] && URL="${URL}?autoinstall=1"
@@ -52,8 +53,6 @@ command -v chromium &>/dev/null || BROWSER="firefox"
 CHROMIUM_FLAGS=(
     --kiosk
     "--app=$URL"
-    --ozone-platform=wayland
-    --enable-wayland-ime
     --disable-translate
     --no-first-run
     --disable-infobars
@@ -62,8 +61,19 @@ CHROMIUM_FLAGS=(
     --lang=ar
 )
 
-if command -v gamescope &>/dev/null; then
-    exec gamescope -W 1280 -H 800 -f -r 60 -- "$BROWSER" "${CHROMIUM_FLAGS[@]}"
-else
-    exec "$BROWSER" "${CHROMIUM_FLAGS[@]}"
-fi
+run_browser() {
+    local platform="$1"
+    CHROMIUM_FLAGS+=(--ozone-platform="$platform")
+    if [[ "$platform" == "wayland" ]]; then
+        CHROMIUM_FLAGS+=(--enable-wayland-ime)
+    fi
+    if command -v gamescope &>/dev/null; then
+        exec gamescope -W 1280 -H 800 -f -r 60 -- "$BROWSER" "${CHROMIUM_FLAGS[@]}"
+    else
+        exec "$BROWSER" "${CHROMIUM_FLAGS[@]}"
+    fi
+}
+
+PLATFORM=x11
+[[ -n "${WAYLAND_DISPLAY:-}" ]] && PLATFORM=wayland
+run_browser "$PLATFORM"

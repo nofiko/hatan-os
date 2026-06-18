@@ -1,9 +1,9 @@
 [Unit]
-Description=HATAN OS Graphical Installer
+Description=HATAN OS Graphical Installer (Steam Deck)
 Documentation=https://github.com/nofiko/hatan-os
-After=local-fs.target
-Wants=NetworkManager.service
-Before=display-manager.service
+After=dbus.service NetworkManager.service local-fs.target
+Wants=NetworkManager.service dbus.service
+ConditionPathExists=/opt/hatan-os/scripts/hatan-live-installer.sh
 
 [Service]
 Type=simple
@@ -13,7 +13,7 @@ Environment=HATAN_PROJECT_DIR=/opt/hatan-os
 Environment=HATAN_INSTALL_PORT=8766
 ExecStart=/opt/hatan-os/scripts/hatan-live-installer.sh
 Restart=on-failure
-RestartSec=5
+RestartSec=10
 StandardOutput=journal+console
 StandardError=journal+console
 

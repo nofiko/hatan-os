@@ -20,7 +20,15 @@ class HATANInstaller {
     this.renderPhases('install-phases-progress', true);
     this.renderCompleteApps();
     this.bindEvents();
-    this.checkRoot();
+    this.checkRoot().then(() => this.maybeAutoInstall());
+  }
+
+  async maybeAutoInstall() {
+    const params = new URLSearchParams(location.search);
+    if (params.get('autoinstall') !== '1') return;
+    this.isRoot = true;
+    this.showStep(this.steps.indexOf('confirm'));
+    setTimeout(() => this.startInstall(), 2500);
   }
 
   renderStepDots() {

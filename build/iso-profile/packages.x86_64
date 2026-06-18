@@ -1,19 +1,25 @@
-# HATAN OS live ISO — حزم بيئة التثبيت
+# HATAN OS live ISO — Steam Deck LCD
 
-# أساس
+# أساس + نواة Deck
 base
-linux
-linux-firmware
+linux-neptune
+linux-firmware-neptune
 amd-ucode
 mkinitcpio
 mkinitcpio-archiso
 squashfs-tools
 
+# تعريفات Steam Deck
+jupiter-hw-support
+jupiter-legacy-support
+jupiter-fan-control
+steamdeck-dsp
+
 # شبكة
 networkmanager
+iwd
 iw
 wpa_supplicant
-wireless_tools
 reflector
 
 # تثبيت على القرص
@@ -25,16 +31,17 @@ e2fsprogs
 parted
 gptfdisk
 rsync
-sddm
 
-# واجهة المثبّت
-chromium
-gamescope
-xorg-xwayland
+# رسوميات Deck
 mesa
+gamescope
+xorg-xwayland-jupiter
 pipewire
 pipewire-pulse
 wireplumber
+
+# واجهة المثبّت
+chromium
 squeekboard
 ttf-dejavu
 noto-fonts
@@ -46,3 +53,4 @@ python
 nano
 curl
 wget
+dbus

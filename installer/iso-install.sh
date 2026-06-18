@@ -78,11 +78,15 @@ mount "$ROOT_PART" "$MNT"
 mkdir -p "$MNT/boot"
 mount "$EFI_PART" "$MNT/boot"
 
-# ── 4. pacstrap ────────────────────────────────────────
+# ── 4. pacstrap (نواة Steam Deck) ───────────────────────
 report_progress "تثبيت Arch الأساسي" 18
+mkdir -p "$MNT/etc/pacman.d"
+cp "$PROJECT_DIR/base/pacman.conf" "$MNT/etc/pacman.conf"
+cp /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/mirrorlist" 2>/dev/null || true
+
 pacstrap "$MNT" \
-    base base-devel linux linux-firmware amd-ucode \
-    networkmanager sudo grub efibootmgr dosfstools e2fsprogs \
+    base linux-neptune linux-firmware-neptune amd-ucode \
+    networkmanager iwd sudo grub efibootmgr dosfstools e2fsprogs \
     pipewire pipewire-pulse wireplumber mkinitcpio
 
 genfstab -U "$MNT" >> "$MNT/etc/fstab"
@@ -139,10 +143,10 @@ arch-chroot "$MNT" bash -c '
     mkdir -p /etc/cmdline.d
 '
 
-arch-chroot "$MNT" bash -c "echo 'root=UUID=${ROOT_UUID} rw' > /etc/cmdline.d/00-root.conf"
-arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw\"|" /etc/default/grub 2>/dev/null || \
-    arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw\"' >> /etc/default/grub"
-arch-chroot "$MNT" mkinitcpio -p linux 2>/dev/null || true
+arch-chroot "$MNT" bash -c "echo 'root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes' > /etc/cmdline.d/00-root.conf"
+arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes\"|" /etc/default/grub 2>/dev/null || \
+    arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${ROOT_UUID} rw amdgpu.dc=1 nvme_load=yes\"' >> /etc/default/grub"
+arch-chroot "$MNT" mkinitcpio -p linux-neptune 2>/dev/null || arch-chroot "$MNT" mkinitcpio -P 2>/dev/null || true
 
 arch-chroot "$MNT" grub-install \
     --target=x86_64-efi \
