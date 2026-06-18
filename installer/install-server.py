@@ -17,6 +17,11 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
 UI_DIR = PROJECT_DIR / 'ui' / 'installer'
 INSTALL_SCRIPT = SCRIPT_DIR / 'install.sh'
+ISO_INSTALL_SCRIPT = SCRIPT_DIR / 'iso-install.sh'
+IS_LIVE_ISO = (
+    os.environ.get('HATAN_ISO_LIVE') == '1'
+    or Path('/etc/hatan/iso-live').is_file()
+)
 RUNTIME_DIR = Path(os.environ.get('HATAN_RUNTIME_DIR', tempfile.gettempdir()))
 LOG_FILE = RUNTIME_DIR / 'hatan-install.log'
 PROGRESS_FILE = RUNTIME_DIR / 'hatan-install-progress.json'
@@ -73,10 +78,14 @@ def run_install(options: dict):
     env['HATAN_LOG_FILE'] = str(LOG_FILE)
     env['HATAN_PROJECT_DIR'] = str(PROJECT_DIR)
 
+    script = INSTALL_SCRIPT
+    if IS_LIVE_ISO and ISO_INSTALL_SCRIPT.is_file():
+        script = ISO_INSTALL_SCRIPT
+
     try:
         with open(LOG_FILE, 'a', encoding='utf-8') as log:
             install_process = subprocess.Popen(
-                ['bash', str(INSTALL_SCRIPT)],
+                ['bash', str(script)],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
                 env=env,
@@ -123,8 +132,11 @@ class InstallerHandler(SimpleHTTPRequestHandler):
         parsed = urlparse(self.path)
 
         if parsed.path == '/api/check':
+            live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
             self.send_json({
-                'root': is_root(),
+                'root': is_root() or live,
+                'liveIso': live,
+                'targetDisk': os.environ.get('HATAN_TARGET_DISK', '/dev/nvme0n1'),
             })
             return
 
@@ -174,7 +186,8 @@ class InstallerHandler(SimpleHTTPRequestHandler):
         global install_running
 
         if self.path == '/api/install':
-            if not is_root():
+            live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
+            if not is_root() and not live:
                 self.send_json({'error': 'يتطلب صلاحيات root'}, 403)
                 return
             if install_running:

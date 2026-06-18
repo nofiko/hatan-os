@@ -1,6 +1,8 @@
 # Build
 build/output/
 build/iso-work/
+build/wsl-bootstrap/
+build/iso-build.log
 
 # ISO files (large)
 *.iso
@@ -12,6 +14,10 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# IDE
+.vscode/
+agent-tools/
 
 # Temp
 /tmp/

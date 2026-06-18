@@ -3,21 +3,25 @@
 
 iso_name="hatan-os"
 iso_label="HATAN_OS"
-iso_publisher="HATAN OS"
+iso_publisher="HATAN OS <https://github.com/hatan-os>"
 iso_application="HATAN OS Installer for Steam Deck"
 iso_version="$(date +%Y.%m.%d)"
 install_dir="arch"
 buildmodes=('iso')
-bootmodes=('bios.syslinux.mbr' 'uefi-x64.systemd-boot.esp')
+bootmodes=('uefi.systemd-boot' 'uefi.grub')
 arch="x86_64"
 pacman_conf="pacman.conf"
 airootfs_image_type="squashfs"
 airootfs_image_tool_options=('-comp' 'xz' '-Xbcj' 'x86' '-b' '1M' '-Xdict-size' '1M')
+bootstrap_tarball_compression=('zstd' '-c' '-T0' '--auto-threads=logical' '--long' '-19')
 file_permissions=(
-  ["/etc/shadow"]="0:0:0400"
-  ["/root"]="0:0:0750"
-  ["/root/.automated_script.sh"]="0:0:0755"
-  ["/root/.gnupg"]="0:0:0700"
-  ["/usr/local/bin/hatan-autoinstall.sh"]="0:0:0755"
-  ["/usr/local/bin/hatan-install-now"]="0:0:0755"
+  ["/etc/shadow"]="0:0:600"
+  ["/usr/local/bin/hatan-install-now"]="0:0:755"
+  ["/root"]="0:0:750"
+  ["/root/customize_airootfs.sh"]="0:0:755"
+  ["/opt/hatan-os/scripts/hatan-live-installer.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/install.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/iso-install.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/hat-install.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/install-server.py"]="0:0:755"
 )

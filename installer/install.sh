@@ -66,6 +66,7 @@ chmod +x "$HAT_DIR/scripts/hat-deck-input.py"
 chmod +x "$HAT_DIR/installer/hat-install.sh"
 chmod +x "$HAT_DIR/installer/live-install.sh"
 chmod +x "$HAT_DIR/installer/dual-boot-install.sh" 2>/dev/null || true
+chmod +x "$HAT_DIR/installer/iso-install.sh" 2>/dev/null || true
 chmod +x "$HAT_DIR/installer/install-server.py"
 if [[ -f "$HAT_DIR/ui/boot/config/os-paths.deck.json" ]]; then
     cp "$HAT_DIR/ui/boot/config/os-paths.deck.json" "$HAT_DIR/ui/boot/config/os-paths.json"

@@ -1,95 +1,93 @@
 #!/bin/bash
-# HATAN OS — بناء ملف ISO للتثبيت (Arch Linux أو WSL)
-
+# HATAN OS — بناء صورة ISO للتثبيت على Steam Deck
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-OUT="$ROOT/build/output"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
+PROFILE_DIR="$SCRIPT_DIR/iso-profile"
+OUTPUT_DIR="$SCRIPT_DIR/output"
+HATAN_IN_ISO="$PROFILE_DIR/airootfs/opt/hatan-os"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+log()  { echo -e "${GREEN}[HATAN OS]${NC} $1"; }
+err()  { echo -e "${RED}[خطأ]${NC} $1"; exit 1; }
+step() { echo -e "${CYAN}==>${NC} $1"; }
+
+echo ""
+echo "  ╔══════════════════════════════════════════════╗"
+echo "  ║     HATAN OS — بناء ISO للتثبيت              ║"
+echo "  ╚══════════════════════════════════════════════╝"
+echo ""
+
+[[ $EUID -eq 0 ]] || err "شغّل بصلاحيات root: sudo $0"
+
+command -v mkarchiso &>/dev/null || {
+    step "تثبيت archiso..."
+    pacman -Sy --noconfirm archiso rsync
+}
+
+[[ -f "$PROFILE_DIR/profiledef.sh" ]] || err "ملف profiledef.sh غير موجود"
+
 RELENG="/usr/share/archiso/configs/releng"
-WORK="$ROOT/build/iso-work"
-
-echo ""
-echo "  ╔══════════════════════════════════════╗"
-echo "  ║   HATAN OS — بناء ملف ISO           ║"
-echo "  ╚══════════════════════════════════════╝"
-echo ""
-
-if [[ $EUID -ne 0 ]]; then
-    echo "شغّل كـ root: sudo bash build/build-iso.sh"
-    exit 1
+if [[ -d "$RELENG" ]]; then
+    step "دمج ملفات الإقلاع من archiso releng"
+    [[ -f "$PROFILE_DIR/bootstrap_packages" ]] || cp "$RELENG/bootstrap_packages" "$PROFILE_DIR/"
+    for dir in grub syslinux; do
+        if [[ -d "$RELENG/$dir" ]]; then
+            rm -rf "$PROFILE_DIR/$dir"
+            cp -a "$RELENG/$dir" "$PROFILE_DIR/"
+        fi
+    done
 fi
 
-if ! command -v mkarchiso >/dev/null 2>&1; then
-    echo "ثبّت archiso: pacman -S archiso"
-    exit 1
-fi
+step "مزامنة الأصول"
+bash "$PROJECT_DIR/scripts/sync-assets.sh" 2>/dev/null || true
 
-if [[ ! -d "$RELENG" ]]; then
-    echo "لم يُعثر على قالب releng في $RELENG"
-    exit 1
-fi
-
-echo "==> نسخ قالب Arch ISO..."
-rm -rf "$WORK"
-mkdir -p "$WORK"
-cp -a "$RELENG"/* "$WORK/"
-
-# تخصيص اسم ISO
-sed -i 's/^iso_name=.*/iso_name="hatan-os"/' "$WORK/profiledef.sh"
-sed -i 's/^iso_label=.*/iso_label="HATAN_OS"/' "$WORK/profiledef.sh"
-sed -i 's/^iso_publisher=.*/iso_publisher="HATAN OS"/' "$WORK/profiledef.sh"
-sed -i 's/^iso_application=.*/iso_application="HATAN OS Installer for Steam Deck"/' "$WORK/profiledef.sh"
-
-echo "==> إضافة حزم المثبت..."
-grep -qxF 'rsync' "$WORK/packages.x86_64" || echo rsync >> "$WORK/packages.x86_64"
-grep -qxF 'iwd' "$WORK/packages.x86_64" || echo iwd >> "$WORK/packages.x86_64"
-
-AIROOT="$WORK/airootfs"
-mkdir -p "$AIROOT/opt/hatan-os" "$AIROOT/usr/local/bin" \
-    "$AIROOT/etc/systemd/system/multi-user.target.wants"
-
-echo "==> تضمين ملفات HATAN OS..."
-rsync -a --delete \
+step "نسخ ملفات HATAN OS إلى ملف ISO"
+rm -rf "$HATAN_IN_ISO"
+mkdir -p "$HATAN_IN_ISO"
+rsync -a \
     --exclude='build/output' \
-    --exclude='build/iso-work' \
+    --exclude='build/wsl-bootstrap' \
+    --exclude='build/iso-build.log' \
+    --exclude='build/iso-profile/airootfs/opt' \
     --exclude='.git' \
-    "$ROOT/" "$AIROOT/opt/hatan-os/"
+    --exclude='.vscode' \
+    --exclude='agent-tools' \
+    "$PROJECT_DIR"/ "$HATAN_IN_ISO/"
 
-cp "$ROOT/installer/ventoy/live-sysroot/usr/local/bin/hatan-autoinstall.sh" \
-    "$AIROOT/usr/local/bin/hatan-autoinstall.sh"
-cp "$ROOT/installer/ventoy/live-sysroot/etc/systemd/system/hatan-autoinstall.service" \
-    "$AIROOT/etc/systemd/system/hatan-autoinstall.service"
+chmod +x "$HATAN_IN_ISO/scripts/hatan-live-installer.sh"
+chmod +x "$HATAN_IN_ISO/installer/"*.sh
+chmod +x "$HATAN_IN_ISO/installer/install-server.py"
 
-cat > "$AIROOT/usr/local/bin/hatan-install-now" << 'EOF'
-#!/bin/bash
-set -euo pipefail
-exec > >(tee -a /tmp/hatan-install-now.log) 2>&1
-echo "[hatan] ISO installer: $(date)"
-for p in /opt/hatan-os /run/archiso/bootmnt/hatan-os; do
-    [[ -f "$p/installer/live-install.sh" ]] || continue
-    export HATAN_PROJECT_DIR="$p" HATAN_NONINTERACTIVE=1 HATAN_INSTALL_RECOMMENDED=0
-    export HATAN_TARGET_DISK="${HATAN_TARGET_DISK:-/dev/nvme0n1}"
-    sed -i 's/\r$//' "$p/installer/live-install.sh" || true
-    chmod +x "$p/installer/live-install.sh"
-    exec bash "$p/installer/live-install.sh"
-done
-echo "[hatan] hatan-os not found"; exit 1
-EOF
-chmod +x "$AIROOT/usr/local/bin/hatan-install-now"
+mkdir -p "$OUTPUT_DIR/work"
+step "بناء ISO (قد يستغرق 15–30 دقيقة)..."
 
-ln -sf ../hatan-autoinstall.service \
-    "$AIROOT/etc/systemd/system/multi-user.target.wants/hatan-autoinstall.service"
+cd "$PROFILE_DIR"
+mkarchiso -v -w "$OUTPUT_DIR/work" -o "$OUTPUT_DIR" .
 
-mkdir -p "$OUT"
-echo "==> بناء ISO (10-25 دقيقة)..."
-mkarchiso -v -r -o "$OUT" "$WORK"
+ISO_FILE=$(find "$OUTPUT_DIR" -maxdepth 1 -name 'hatan-os-*.iso' -type f | sort | tail -1)
+[[ -n "$ISO_FILE" ]] || ISO_FILE=$(find "$OUTPUT_DIR" -maxdepth 1 -name '*.iso' -type f | sort | tail -1)
 
-ISO="$(ls -1t "$OUT"/hatan-os-*.iso 2>/dev/null | head -n1 || true)"
 echo ""
-if [[ -n "$ISO" ]]; then
-    echo "✅ ISO جاهز:"
-    echo "   $ISO"
-    ls -lh "$ISO"
+if [[ -n "$ISO_FILE" ]]; then
+    log "✅ اكتمل البناء!"
+    echo ""
+    echo "  الملف: $ISO_FILE"
+    echo "  الحجم: $(du -h "$ISO_FILE" | cut -f1)"
+    echo ""
+    echo "  على PC (Rufus):"
+    echo "    • GPT · UEFI · FAT32 · ISO mode"
+    echo ""
+    echo "  على Steam Deck:"
+    echo "    1. Volume+ + Power → Boot Manager → USB"
+    echo "    2. تظهر واجهة تثبيت HATAN تلقائياً + لوحة لمس"
+    echo "    3. التالي → ابدأ التثبيت → إعادة التشغيل"
+    echo ""
 else
-    ls -la "$OUT"
+    err "لم يُعثر على ملف ISO في $OUTPUT_DIR"
 fi

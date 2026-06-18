@@ -1,27 +1,36 @@
 @echo off
-title HATAN OS - Build ISO
-cd /d "%~dp0"
-
-where wsl >nul 2>&1
-if errorlevel 1 (
-    echo.
-    echo  WSL غير متوفر. لبناء ISO تحتاج أحد الخيارات:
-    echo    1. Arch Linux:  sudo bash build/build-iso.sh
-    echo    2. تثبيت WSL ثم أعد تشغيل هذا الملف
-    echo.
-    echo  بديل بدون بناء ISO: استخدم install-hatan.bat ^(USB + Ventoy^)
-    echo.
-    pause
-    exit /b 1
-)
+chcp 65001 >nul
+title HATAN OS — بناء ISO
 
 echo.
-echo  Building HATAN OS ISO via WSL...
-echo  قد يُطلب كلمة مرور Linux.
+echo  ╔══════════════════════════════════════════════╗
+echo  ║     HATAN OS — بناء ISO                      ║
+echo  ╚══════════════════════════════════════════════╝
 echo.
-
-for /f "delims=" %%I in ('wsl wslpath -a "%CD%"') do set WSL_DIR=%%I
-wsl bash -lc "cd '%WSL_DIR%' && sudo bash build/build-iso.sh"
-
+echo  ملف ISO لا يُبنى على Windows مباشرة.
+echo  يحتاج Arch Linux + archiso (~20 GB مساحة).
+echo.
+echo  ┌─ الخيارات ─────────────────────────────────┐
+echo  │                                              │
+echo  │  1. Arch Linux / Steam Deck (Arch)           │
+echo  │     sudo ./build/build-iso.sh               │
+echo  │                                              │
+echo  │  2. WSL2 + Arch                              │
+echo  │     wsl -d Arch                              │
+echo  │     cd /mnt/c/Users/PC-12/Desktop/HAT2       │
+echo  │     sudo ./build/build-iso.sh               │
+echo  │                                              │
+echo  │  3. GitHub Actions (من المتصفح)              │
+echo  │     ارفع المشروع إلى GitHub                  │
+echo  │     Actions ^> Build HATAN OS ISO ^> Run     │
+echo  │     حمّل الملف من Artifacts                  │
+echo  │                                              │
+echo  └──────────────────────────────────────────────┘
+echo.
+echo  بعد البناء:
+echo    • Rufus: GPT + UEFI + FAT32 + ISO mode
+echo    • Boot Deck من USB → واجهة HATAN + لوحة لمس
+echo.
+echo  راجع docs/ISO.md للتفاصيل.
 echo.
 pause

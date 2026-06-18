@@ -1,0 +1,8 @@
+#!/bin/bash
+# HATAN OS — تثبيت فوري من الطرفية (بدون واجهة)
+set -euo pipefail
+export HATAN_ISO_LIVE=1
+export HATAN_PROJECT_DIR=/opt/hatan-os
+export HATAN_NONINTERACTIVE=1
+export HATAN_INSTALL_RECOMMENDED=1
+exec bash /opt/hatan-os/installer/iso-install.sh

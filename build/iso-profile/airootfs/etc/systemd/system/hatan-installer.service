@@ -1,0 +1,21 @@
+[Unit]
+Description=HATAN OS Graphical Installer
+Documentation=https://github.com/nofiko/hatan-os
+After=local-fs.target
+Wants=NetworkManager.service
+Before=display-manager.service
+
+[Service]
+Type=simple
+User=root
+Environment=HATAN_ISO_LIVE=1
+Environment=HATAN_PROJECT_DIR=/opt/hatan-os
+Environment=HATAN_INSTALL_PORT=8766
+ExecStart=/opt/hatan-os/scripts/hatan-live-installer.sh
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal+console
+StandardError=journal+console
+
+[Install]
+WantedBy=multi-user.target
