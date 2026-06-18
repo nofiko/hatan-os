@@ -27,7 +27,7 @@ echo ""
 
 command -v mkarchiso &>/dev/null || {
     step "تثبيت archiso..."
-    pacman -Sy --noconfirm archiso rsync
+    pacman -Sy --noconfirm archiso rsync systemd
 }
 
 [[ -f "$PROFILE_DIR/profiledef.sh" ]] || err "ملف profiledef.sh غير موجود"
