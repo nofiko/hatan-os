@@ -24,20 +24,15 @@ class HATANInstaller {
     this.renderPhases('install-phases-progress', true);
     this.renderCompleteApps();
     this.bindEvents();
-    this.checkRoot().then(() => this.maybeAutoInstall());
+    this.checkRoot().then(() => this.openLiveEntry());
   }
 
-  async maybeAutoInstall() {
+  async openLiveEntry() {
     const params = new URLSearchParams(location.search);
-    if (params.get('autoinstall') !== '1') return;
-    this.isRoot = true;
-    if (this.isLiveIso && !this.isOnline) {
+    // Auto Install من GRUB: افتح الواجهة على خطوة الواي فاي مباشرة (بدون تثبيت تلقائي)
+    if (this.isLiveIso && params.get('autoinstall') === '1') {
       this.showStep(this.steps.indexOf('wifi'));
-      await this.scanNetworks();
-      return;
     }
-    this.showStep(this.steps.indexOf('confirm'));
-    setTimeout(() => this.startInstall(), 2500);
   }
 
   renderStepDots() {
@@ -135,7 +130,7 @@ class HATANInstaller {
     next.style.display = isProgress || isComplete ? 'none' : 'inline-block';
 
     if (isWifi) {
-      next.textContent = 'التالي';
+      next.textContent = this.isOnline ? 'التالي — متصل بالإنترنت' : 'التالي';
       next.disabled = !this.isOnline;
       this.onWifiScreen();
     } else if (isConfirm) {
@@ -164,8 +159,13 @@ class HATANInstaller {
   }
 
   async onWifiScreen() {
+    this.setWifiStatus('اتصل بالإنترنت لتحميل متطلبات التثبيت...', '');
+    // محاولة الشبكات المحفوظة في الخلفية — لا تمنع الواجهة
+    fetch('/api/wifi/try-defaults', { cache: 'no-store' })
+      .then(() => this.refreshWifiStatus())
+      .catch(() => {});
     await this.refreshWifiStatus();
-    if (!this.wifiConnected) {
+    if (!this.isOnline) {
       await this.scanNetworks();
     }
   }
@@ -297,16 +297,6 @@ class HATANInstaller {
       this.showWifiList();
       await this.scanNetworks();
       await this.refreshWifiStatus();
-
-      if (this.isOnline) {
-        const params = new URLSearchParams(location.search);
-        if (params.get('autoinstall') === '1') {
-          setTimeout(() => {
-            this.showStep(this.steps.indexOf('confirm'));
-            setTimeout(() => this.startInstall(), 1500);
-          }, 800);
-        }
-      }
     } catch {
       this.setWifiStatus('فشل الاتصال', 'error');
     }
@@ -338,8 +328,8 @@ class HATANInstaller {
       if (!demo) return;
     }
 
-    if (current === 'welcome' && this.isLiveIso && this.isOnline) {
-      this.showStep(this.steps.indexOf('confirm'));
+    if (current === 'welcome' && this.isLiveIso) {
+      this.showStep(this.steps.indexOf('wifi'));
       return;
     }
 

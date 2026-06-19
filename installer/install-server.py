@@ -46,15 +46,21 @@ def _run(cmd, timeout=12):
         return None
 
 
-def prepare_wifi():
+def prepare_wifi_radio():
+    """تشغيل الراديو فقط — بدون اتصال تلقائي (يحدث من الواجهة)."""
     _run(['rfkill', 'unblock', 'wifi'], timeout=5)
     _run(['rfkill', 'unblock', 'all'], timeout=5)
     _run(['systemctl', 'start', 'iwd'], timeout=8)
     _run(['systemctl', 'start', 'NetworkManager'], timeout=8)
+    _run(['nmcli', 'radio', 'wifi', 'on'], timeout=5)
+
+
+def try_default_wifi():
+    """محاولة الشبكات المحفوظة — يُستدعى من الواجهة فقط."""
+    prepare_wifi_radio()
     autoconnect = Path('/usr/local/bin/hatan-wifi-autoconnect.sh')
     if autoconnect.is_file():
         _run(['bash', str(autoconnect)], timeout=45)
-    _run(['nmcli', 'radio', 'wifi', 'on'], timeout=5)
     _run(['nmcli', 'device', 'wifi', 'rescan'], timeout=10)
 
 
@@ -74,7 +80,8 @@ def get_wifi():
 
 
 def wifi_scan():
-    prepare_wifi()
+    prepare_wifi_radio()
+    _run(['nmcli', 'device', 'wifi', 'rescan'], timeout=10)
     r = _run(['nmcli', '-t', '-f', 'IN-USE,SSID,SIGNAL,SECURITY', 'dev', 'wifi', 'list'], timeout=15)
     if not r or r.returncode != 0:
         return []
@@ -103,7 +110,7 @@ def wifi_scan():
 
 
 def wifi_connect(ssid: str, password: str):
-    prepare_wifi()
+    prepare_wifi_radio()
     cmd = ['nmcli', 'dev', 'wifi', 'connect', ssid]
     if password:
         cmd += ['password', password]
@@ -252,6 +259,14 @@ class InstallerHandler(SimpleHTTPRequestHandler):
             self.send_json({'networks': wifi_scan()})
             return
 
+        if parsed.path == '/api/wifi/try-defaults':
+            try_default_wifi()
+            self.send_json({
+                'wifi': get_wifi(),
+                'online': has_internet(),
+            })
+            return
+
         if parsed.path == '/api/status':
             if PROGRESS_FILE.exists():
                 try:
@@ -365,9 +380,6 @@ def main():
         sys.exit(1)
 
     write_progress('في الانتظار', 0)
-
-    if IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file():
-        prepare_wifi()
 
     print(f'[HATAN OS] Installer: http://127.0.0.1:{PORT}')
     server = HTTPServer(('127.0.0.1', PORT), InstallerHandler)

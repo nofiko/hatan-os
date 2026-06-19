@@ -11,14 +11,7 @@ export HATAN_PROJECT_DIR="$HAT_DIR"
 
 log() { echo "[hatan-live] $*"; }
 
-/usr/local/bin/hatan-wifi-autoconnect.sh 2>/dev/null || true
-
-for i in $(seq 1 45); do
-    ping -c1 -W1 steamdeck-packages.steamos.cloud &>/dev/null && break
-    nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting' && sleep 1 && continue
-    sleep 1
-done
-
+# لا انتظار للإنترنت — الواجهة أولاً، الاتصال من المستخدم لاحقاً
 fuser -k "${PORT}/tcp" 2>/dev/null || true
 sleep 0.5
 
@@ -32,6 +25,7 @@ if ! kill -0 "$SERVER_PID" 2>/dev/null; then
     exec bash /usr/local/bin/hatan-install-now
 fi
 
+# autoinstall = افتح مباشرة على خطوة الواي فاي (بدون تثبيت تلقائي)
 grep -q 'hatan.autoinstall=1' /proc/cmdline 2>/dev/null && URL="${URL}?autoinstall=1"
 
 BROWSER="chromium"

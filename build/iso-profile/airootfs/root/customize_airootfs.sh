@@ -21,7 +21,8 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime 2>/dev/null || true
 
 systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable iwd.service 2>/dev/null || true
-systemctl enable hatan-wifi-autoconnect.service 2>/dev/null || true
+# لا اتصال واي فاي تلقائي عند الإقلاع — يُطلب من الواجهة
+systemctl disable hatan-wifi-autoconnect.service 2>/dev/null || true
 systemctl enable getty@tty1.service 2>/dev/null || true
 
 # WiFi Deck: NM يستخدم iwd كخلفية — ملفات الاتصال الافتراضية 600
