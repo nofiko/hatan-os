@@ -1,0 +1,15 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=تثبيت HATAN OS
+Name[ar]=تثبيت HATAN OS
+Comment=انقر لتثبيت HATAN OS من تطبيق الملفات
+Comment[ar]=انقر لتثبيت HATAN OS على Steam Deck
+GenericName=مثبّت HATAN
+Exec=bash ./hatan-install-from-files.sh
+Path=
+Icon=system-software-install
+Terminal=false
+Categories=System;Settings;
+StartupNotify=true
+MimeType=

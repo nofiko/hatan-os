@@ -1,0 +1,17 @@
+# HATAN OS — إقلاع من ملفات (بدون ISO على USB)
+# يُولَّد تلقائياً بواسطة install-hatan.bat
+
+set default="hatan-auto"
+set timeout=15
+
+menuentry "HATAN OS - Auto Install (Boot from file)" --class arch --id hatan-auto {
+    set gfxpayload=keep
+    linux /hatan-live/boot/x86_64/vmlinuz-linux archisobasedir=hatan-live archisolabel=__ARCHISO_LABEL__ cow_spacesize=4G nvme_load=yes amd_iommu=off amdgpu.dc=1 rd.systemd.gpt_auto=no loglevel=3 modprobe.blacklist=ventoy
+    initrd /hatan-live/boot/x86_64/initramfs-linux.img
+}
+
+menuentry "HATAN OS - Manual (terminal)" --class arch --id hatan-manual {
+    set gfxpayload=keep
+    linux /hatan-live/boot/x86_64/vmlinuz-linux archisobasedir=hatan-live archisolabel=__ARCHISO_LABEL__ cow_spacesize=4G nvme_load=yes amd_iommu=off rd.systemd.gpt_auto=no loglevel=3 modprobe.blacklist=ventoy
+    initrd /hatan-live/boot/x86_64/initramfs-linux.img
+}

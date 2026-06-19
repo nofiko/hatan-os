@@ -78,16 +78,11 @@ mount "$ROOT_PART" "$MNT"
 mkdir -p "$MNT/boot"
 mount "$EFI_PART" "$MNT/boot"
 
-# ── 4. pacstrap (نواة Steam Deck) ───────────────────────
-report_progress "تثبيت Arch الأساسي" 18
-mkdir -p "$MNT/etc/pacman.d"
-cp "$PROJECT_DIR/base/pacman.conf" "$MNT/etc/pacman.conf"
-cp /etc/pacman.d/mirrorlist "$MNT/etc/pacman.d/mirrorlist" 2>/dev/null || true
-
-pacstrap "$MNT" \
-    base linux-neptune linux-firmware-neptune amd-ucode \
-    networkmanager iwd sudo grub efibootmgr dosfstools e2fsprogs \
-    pipewire pipewire-pulse wireplumber steamdeck-dsp mkinitcpio iptables
+# ── 4. pacstrap (أساس SteamOS / Holo) ───────────────────
+report_progress "تثبيت أساس SteamOS" 18
+chmod +x "$PROJECT_DIR/scripts/pacstrap-steamos.sh"
+bash "$PROJECT_DIR/scripts/pacstrap-steamos.sh" \
+    "$MNT" "$PROJECT_DIR/base/packages/steamos-base.txt" "$PROJECT_DIR"
 
 genfstab -U "$MNT" >> "$MNT/etc/fstab"
 

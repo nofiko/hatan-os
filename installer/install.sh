@@ -59,11 +59,14 @@ chmod +x "$HAT_DIR/ui/boot/hatan-boot.sh" 2>/dev/null || true
 chmod +x "$HAT_DIR/ui/boot/boot-server.py" 2>/dev/null || true
 chmod +x "$HAT_DIR/ui/boot/scripts/"*.sh 2>/dev/null || true
 chmod +x "$HAT_DIR/scripts/install-deck-packages.sh"
+chmod +x "$HAT_DIR/scripts/pacstrap-steamos.sh"
+chmod +x "$HAT_DIR/scripts/setup-steamos-base.sh"
 chmod +x "$HAT_DIR/scripts/install-default-apps.sh"
 chmod +x "$HAT_DIR/scripts/hat-capture-daemon.py"
 chmod +x "$HAT_DIR/scripts/hat-record-toggle.sh"
 chmod +x "$HAT_DIR/scripts/hat-deck-input.py"
 chmod +x "$HAT_DIR/installer/hat-install.sh"
+chmod +x "$HAT_DIR/installer/launch-from-files.sh"
 chmod +x "$HAT_DIR/installer/live-install.sh"
 chmod +x "$HAT_DIR/installer/dual-boot-install.sh" 2>/dev/null || true
 chmod +x "$HAT_DIR/installer/iso-install.sh" 2>/dev/null || true
@@ -72,14 +75,18 @@ if [[ -f "$HAT_DIR/ui/boot/config/os-paths.deck.json" ]]; then
     cp "$HAT_DIR/ui/boot/config/os-paths.deck.json" "$HAT_DIR/ui/boot/config/os-paths.json"
 fi
 
-# ── 2. تكوين pacman ────────────────────────────────────
-report_progress "إعداد مستودعات Valve" 12
+# ── 2. تكوين pacman (أساس SteamOS / Holo) ──────────────
+report_progress "إعداد مستودعات SteamOS" 12
 cp "$HAT_DIR/base/pacman.conf" /etc/pacman.conf
 pacman -Sy --noconfirm
 
-# ── 3. تثبيت الحزم الأساسية (Steam Deck) ───────────────
-report_progress "تثبيت تعريفات Valve" 20
+# ── 3. تثبيت حزم SteamOS + Deck ────────────────────────
+report_progress "تثبيت أساس SteamOS" 20
 bash "$HAT_DIR/scripts/install-deck-packages.sh" "$HAT_DIR/base/packages/essential.txt"
+
+report_progress "إعداد Holo" 28
+HAT_DIR="$HAT_DIR" HATAN_SKIP_MKINITCPIO="${HATAN_SKIP_MKINITCPIO:-0}" \
+    bash "$HAT_DIR/scripts/setup-steamos-base.sh"
 
 # ── 3b. التطبيقات الافتراضية ───────────────────────────
 report_progress "تثبيت التطبيقات الافتراضية" 45
@@ -119,7 +126,7 @@ if [[ -f /etc/mkinitcpio.conf ]] && [[ "${HATAN_SKIP_MKINITCPIO:-0}" != "1" ]]; 
         sed -i 's/^HOOKS=(base udev)/HOOKS=(base udev plymouth)/' /etc/mkinitcpio.conf 2>/dev/null || \
         warn "أضف plymouth يدوياً إلى HOOKS في /etc/mkinitcpio.conf"
     fi
-    mkinitcpio -p linux 2>/dev/null || mkinitcpio -P 2>/dev/null || warn "فشل mkinitcpio"
+    mkinitcpio -p linux-neptune 2>/dev/null || mkinitcpio -P 2>/dev/null || warn "فشل mkinitcpio"
 fi
 
 # ── 6. الخدمات ─────────────────────────────────────────

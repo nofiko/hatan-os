@@ -18,10 +18,12 @@ PROJECT_DIR = SCRIPT_DIR.parent
 UI_DIR = PROJECT_DIR / 'ui' / 'installer'
 INSTALL_SCRIPT = SCRIPT_DIR / 'install.sh'
 ISO_INSTALL_SCRIPT = SCRIPT_DIR / 'iso-install.sh'
+LIVE_INSTALL_SCRIPT = SCRIPT_DIR / 'live-install.sh'
 IS_LIVE_ISO = (
     os.environ.get('HATAN_ISO_LIVE') == '1'
     or Path('/etc/hatan/iso-live').is_file()
 )
+FROM_FILES = os.environ.get('HATAN_FROM_FILES') == '1'
 RUNTIME_DIR = Path(os.environ.get('HATAN_RUNTIME_DIR', tempfile.gettempdir()))
 LOG_FILE = RUNTIME_DIR / 'hatan-install.log'
 PROGRESS_FILE = RUNTIME_DIR / 'hatan-install-progress.json'
@@ -79,7 +81,10 @@ def run_install(options: dict):
     env['HATAN_PROJECT_DIR'] = str(PROJECT_DIR)
 
     script = INSTALL_SCRIPT
-    if IS_LIVE_ISO and ISO_INSTALL_SCRIPT.is_file():
+    if FROM_FILES and LIVE_INSTALL_SCRIPT.is_file():
+        script = LIVE_INSTALL_SCRIPT
+        env['HATAN_PROJECT_DIR'] = str(PROJECT_DIR)
+    elif IS_LIVE_ISO and ISO_INSTALL_SCRIPT.is_file():
         script = ISO_INSTALL_SCRIPT
 
     try:
@@ -136,6 +141,8 @@ class InstallerHandler(SimpleHTTPRequestHandler):
             self.send_json({
                 'root': is_root() or live,
                 'liveIso': live,
+                'fromFiles': FROM_FILES,
+                'dualBoot': os.environ.get('HATAN_DUAL_BOOT', '0') == '1',
                 'targetDisk': os.environ.get('HATAN_TARGET_DISK', '/dev/nvme0n1'),
             })
             return

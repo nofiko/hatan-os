@@ -1,14 +1,12 @@
-# HATAN OS — إصلاح USB بدون مسح Ventoy (لمن جهّز USB مسبقاً)
+# HATAN OS — إصلاح USB بدون مسح Ventoy
 
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'windows-installer.ps1') -ErrorAction SilentlyContinue
-
-# Re-load only needed helpers if dot-sourcing runs main block — use standalone copy
 $ProjectRoot = Split-Path -Parent $PSScriptRoot
 
 function Write-Step([string]$Message) { Write-Host "`n==> $Message" -ForegroundColor Cyan }
 function Write-Ok([string]$Message)   { Write-Host "[OK] $Message" -ForegroundColor Green }
 function Write-Err([string]$Message)  { Write-Host "[X] $Message" -ForegroundColor Red }
+function Write-Warn([string]$Message) { Write-Host "[!] $Message" -ForegroundColor Yellow }
 
 function Convert-ToLf {
     param([string]$Path)
@@ -26,17 +24,30 @@ function Normalize-ShellScriptsToLf {
     }
 }
 
-$ArchIsoMinBytes = 700MB
-
-function Test-ValidArchIsoLocal {
-    param([string]$Path)
-    if (-not (Test-Path -LiteralPath $Path)) { return $false }
-    return (Get-Item -LiteralPath $Path).Length -ge $ArchIsoMinBytes
+function Copy-HatanPayloadFix {
+    param([string]$UsbRoot)
+    $dest = Join-Path $UsbRoot 'hatan-os'
+    if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
+    New-Item -ItemType Directory -Force -Path $dest | Out-Null
+    foreach ($name in @('ui', 'themes', 'config', 'base', 'scripts', 'installer', 'build')) {
+        $srcDir = Join-Path $ProjectRoot $name
+        if (Test-Path $srcDir) {
+            $null = robocopy $srcDir (Join-Path $dest $name) /E /NFL /NDL /NJH /NJS /nc /ns /np
+        }
+    }
+    Normalize-ShellScriptsToLf -RootPath (Join-Path $dest 'installer')
+    Normalize-ShellScriptsToLf -RootPath (Join-Path $dest 'scripts')
+    Write-Ok 'hatan-os updated'
 }
 
 Write-Host ''
 Write-Host '  HATAN OS - USB Fix (no Ventoy reinstall)' -ForegroundColor Cyan
 Write-Host ''
+Write-Host '  [1] Boot from file (hatan-live\, no ISO) — recommended'
+Write-Host '  [2] Classic ISO mode'
+Write-Host ''
+$modePick = Read-Host 'Mode (Enter=1)'
+$useFile = ($modePick -ne '2')
 
 $letter = Read-Host 'USB drive letter (e.g. E)'
 $letter = $letter.Trim().TrimEnd(':').ToUpper()
@@ -48,52 +59,31 @@ if (-not (Test-Path $usbRoot)) {
     exit 1
 }
 
-$isoDir = Join-Path $usbRoot 'ISO'
-New-Item -ItemType Directory -Force -Path $isoDir | Out-Null
+. (Join-Path $PSScriptRoot 'prepare-ventoy-fileboot.ps1')
 
-$plain = Join-Path $isoDir 'archlinux-x86_64.iso'
-$final = Join-Path $isoDir 'archlinux-x86_64_VTGRUB2.iso'
-
-foreach ($p in @($plain, $final)) {
-    if ((Test-Path -LiteralPath $p) -and -not (Test-ValidArchIsoLocal $p)) {
-        Remove-Item -LiteralPath $p -Force
-        Write-Host "Removed corrupt: $(Split-Path -Leaf $p)"
+if ($useFile) {
+    $tempIso = Join-Path $env:TEMP 'hatan-arch-fix.iso'
+    Write-Step 'Need Arch ISO once (~1.2 GB) to refresh hatan-live\'
+    Write-Host '  Download from https://archlinux.org/download/ or use existing file path'
+    $isoInput = Read-Host 'Path to archlinux-x86_64.iso (or Enter to skip rebuild)'
+    if ($isoInput -and (Test-Path -LiteralPath $isoInput)) {
+        Invoke-PrepareFileBootUsb -UsbRoot $usbRoot -IsoPath $isoInput
+    } else {
+        Write-Warn 'Skipped hatan-live rebuild — updating config only'
     }
-}
-
-if ((Test-Path -LiteralPath $plain) -and (Test-ValidArchIsoLocal $plain)) {
-    if (Test-Path -LiteralPath $final) { Remove-Item -LiteralPath $final -Force }
-    Rename-Item -LiteralPath $plain -NewName 'archlinux-x86_64_VTGRUB2.iso'
-    Write-Ok 'ISO renamed to archlinux-x86_64_VTGRUB2.iso'
-} elseif (-not (Test-ValidArchIsoLocal $final)) {
-    Write-Err 'No valid Arch ISO on USB. Put archlinux-x86_64.iso in ISO\ folder (~1.2 GB) and run again.'
-    Read-Host 'Press Enter'
-    exit 1
+    Copy-Item -Force (Join-Path $ProjectRoot 'installer\ventoy\ventoy.json') (Join-Path $usbRoot 'ventoy\ventoy.json')
 } else {
-    Write-Ok 'ISO already correct'
+    Copy-Item -Force (Join-Path $ProjectRoot 'installer\ventoy\ventoy-iso.json') (Join-Path $usbRoot 'ventoy\ventoy.json')
+    Write-Ok 'ventoy.json (ISO mode)'
 }
 
-Write-Step 'Updating hatan-os + ventoy config'
-$dest = Join-Path $usbRoot 'hatan-os'
-if (Test-Path $dest) { Remove-Item -Recurse -Force $dest }
-New-Item -ItemType Directory -Force -Path $dest | Out-Null
-$dirs = @('ui', 'themes', 'config', 'base', 'scripts', 'installer', 'build')
-foreach ($name in $dirs) {
-    $srcDir = Join-Path $ProjectRoot $name
-    if (Test-Path $srcDir) {
-        $null = robocopy $srcDir (Join-Path $dest $name) /E /NFL /NDL /NJH /NJS /nc /ns /np
-    }
+Copy-HatanPayloadFix -UsbRoot $usbRoot
+$usbInstaller = Join-Path $ProjectRoot 'installer\usb'
+foreach ($name in @('hatan-install-from-files.sh', 'تثبيت-HATAN-OS.desktop', 'ابدأ-هنا.txt')) {
+    $src = Join-Path $usbInstaller $name
+    if (Test-Path -LiteralPath $src) { Copy-Item -Force $src (Join-Path $usbRoot $name) }
 }
-Normalize-ShellScriptsToLf -RootPath (Join-Path $dest 'installer')
-Normalize-ShellScriptsToLf -RootPath (Join-Path $dest 'scripts')
 
-$ventoyDir = Join-Path $usbRoot 'ventoy'
-New-Item -ItemType Directory -Force -Path $ventoyDir | Out-Null
-Copy-Item -Force (Join-Path $ProjectRoot 'installer\ventoy\ventoy.json') (Join-Path $ventoyDir 'ventoy.json')
-
-$readme = Join-Path $ProjectRoot 'installer\usb\ابدأ-هنا.txt'
-if (Test-Path $readme) { Copy-Item -Force $readme (Join-Path $usbRoot 'ابدأ-هنا.txt') }
-
-Write-Ok 'USB fixed. Boot Deck from USB -> HATAN OS - Auto Install -> Enter'
+Write-Ok 'USB fixed'
 explorer.exe $usbRoot
 Read-Host 'Press Enter'

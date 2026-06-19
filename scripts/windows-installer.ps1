@@ -158,10 +158,27 @@ function Invoke-PrepareArchIso {
 
 function Copy-UsbExtras {
     param([string]$UsbRoot)
-    $readme = Join-Path $ProjectRoot 'installer\usb\ابدأ-هنا.txt'
+    $usbInstaller = Join-Path $ProjectRoot 'installer\usb'
+    $readme = Join-Path $usbInstaller 'ابدأ-هنا.txt'
     if (Test-Path $readme) {
         Copy-Item -Force $readme (Join-Path $UsbRoot 'ابدأ-هنا.txt')
     }
+    foreach ($name in @(
+            'hatan-install-from-files.sh',
+            'تثبيت-HATAN-OS.desktop'
+        )) {
+        $src = Join-Path $usbInstaller $name
+        if (Test-Path -LiteralPath $src) {
+            Copy-Item -Force $src (Join-Path $UsbRoot $name)
+        }
+    }
+    $launcher = Join-Path $UsbRoot 'hatan-install-from-files.sh'
+    if (Test-Path -LiteralPath $launcher) {
+        $content = [System.IO.File]::ReadAllText($launcher)
+        $content = $content -replace "`r`n", "`n"
+        [System.IO.File]::WriteAllText($launcher, $content, (New-Object System.Text.UTF8Encoding($false)))
+    }
+    Write-Ok 'Deck Files launcher copied (تثبيت-HATAN-OS.desktop)'
 }
 
 function Test-UsbReady {
@@ -188,7 +205,23 @@ function Test-UsbReady {
     if ($errors.Count -gt 0) {
         throw ("USB verification failed:`n- " + ($errors -join "`n- "))
     }
-    Write-Ok 'USB verification passed'
+    Write-Ok 'USB verification passed (ISO mode)'
+}
+
+function Copy-VentoyConfig {
+    param(
+        [string]$UsbRoot,
+        [ValidateSet('File', 'Iso')]
+        [string]$Mode
+    )
+    $ventoyDir = Join-Path $UsbRoot 'ventoy'
+    New-Item -ItemType Directory -Force -Path $ventoyDir | Out-Null
+    $name = if ($Mode -eq 'Iso') { 'ventoy-iso.json' } else { 'ventoy.json' }
+    $src = Join-Path $ProjectRoot "installer\ventoy\$name"
+    Copy-Item -Force $src (Join-Path $ventoyDir 'ventoy.json')
+    if (Get-Command Write-Ok -ErrorAction SilentlyContinue) {
+        Write-Ok ("ventoy.json ($Mode mode)")
+    }
 }
 
 function Save-ArchIso {
@@ -350,7 +383,7 @@ function New-LiveInjectionArchive {
     $ventoyDir = Join-Path $UsbRoot 'ventoy'
     New-Item -ItemType Directory -Force -Path $ventoyDir | Out-Null
     Copy-Item -Force $archive (Join-Path $ventoyDir 'live_injection.tar.gz')
-    Copy-Item -Force (Join-Path $ProjectRoot 'installer\ventoy\ventoy.json') (Join-Path $ventoyDir 'ventoy.json')
+    Copy-VentoyConfig -UsbRoot $UsbRoot -Mode Iso
     Write-Ok 'Auto-install package ready'
 }
 
@@ -370,8 +403,26 @@ try {
     Write-Host ''
     Write-Host '  Prepares USB, then reboots for automatic install.'
     Write-Host '  WARNING: Internal Steam Deck disk will be erased when booting from USB.'
+    Write-Host ''
+    Write-Host '  Boot mode:'
+    Write-Host '    [1] Boot from file — no ISO on USB (recommended)' -ForegroundColor Green
+    Write-Host '    [2] Classic — Arch ISO file on USB (Ventoy ISO mode)'
+    Write-Host ''
+    $bootPick = Read-Host 'Mode (1 or 2, Enter=1)'
+    if ($env:HATAN_BOOT_MODE -eq 'File') {
+        $script:BootMode = 'File'
+    } elseif ($env:HATAN_BOOT_MODE -eq 'Iso') {
+        $script:BootMode = 'Iso'
+    } elseif ($bootPick -eq '2') {
+        $script:BootMode = 'Iso'
+    } else {
+        $script:BootMode = 'File'
+    }
+    Write-Host ''
     Write-Host "  Log: $LogFile"
     Write-Host ''
+
+    . (Join-Path $PSScriptRoot 'prepare-ventoy-fileboot.ps1')
 
     if (-not (Test-AdminElevation)) {
         throw 'Run as Administrator (right-click install-hatan.bat -> Run as administrator)'
@@ -443,24 +494,46 @@ No USB drive found.
     }
     if (-not (Test-Path $usbRoot)) { throw "USB drive ${letter}: not mounted" }
 
-    $isoDir = Join-Path $usbRoot 'ISO'
-    New-Item -ItemType Directory -Force -Path $isoDir | Out-Null
-    $isoPath = Invoke-PrepareArchIso -IsoDir $isoDir
+    $tempIso = Join-Path $temp 'archlinux-x86_64.iso'
+    Save-ArchIso -Destination $tempIso
 
-    Copy-HatanPayload -UsbRoot $usbRoot
-    New-LiveInjectionArchive -UsbRoot $usbRoot
-    Copy-UsbExtras -UsbRoot $usbRoot
-    Test-UsbReady -UsbRoot $usbRoot -IsoPath $isoPath
+    if ($script:BootMode -eq 'File') {
+        Invoke-PrepareFileBootUsb -UsbRoot $usbRoot -IsoPath $tempIso
+        Copy-HatanPayload -UsbRoot $usbRoot
+        Copy-VentoyConfig -UsbRoot $usbRoot -Mode File
+        Copy-UsbExtras -UsbRoot $usbRoot
+        Test-FileBootUsbReady -UsbRoot $usbRoot
+        $bootHint = 'HATAN OS - Auto Install (Boot from file)'
+        $isoPath = '(none — hatan-live\ on USB)'
+    } else {
+        $isoDir = Join-Path $usbRoot 'ISO'
+        New-Item -ItemType Directory -Force -Path $isoDir | Out-Null
+        $finalIso = Join-Path $isoDir 'archlinux-x86_64_VTGRUB2.iso'
+        if (Test-Path -LiteralPath $finalIso) { Remove-Item -LiteralPath $finalIso -Force }
+        Copy-Item -LiteralPath $tempIso -Destination $finalIso -Force
+        if (-not (Test-ValidArchIso -Path $finalIso)) { throw 'Failed to copy Arch ISO to USB' }
+        Write-Ok 'Arch ISO copied to USB\ISO\'
+        $isoPath = $finalIso
+        Copy-HatanPayload -UsbRoot $usbRoot
+        New-LiveInjectionArchive -UsbRoot $usbRoot
+        Copy-UsbExtras -UsbRoot $usbRoot
+        Test-UsbReady -UsbRoot $usbRoot -IsoPath $isoPath
+        $bootHint = 'HATAN OS - Auto Install (ISO)'
+    }
 
     Write-Host ''
     Write-Host '  ==============================================' -ForegroundColor Green
     Write-Host '       USB is ready!' -ForegroundColor Green
     Write-Host '  ==============================================' -ForegroundColor Green
     Write-Host ''
-    Write-Host "  Arch ISO: $isoPath"
+    Write-Host "  Boot:     $bootHint"
     Write-Host '  HATAN:    hatan-os\'
+    if ($script:BootMode -eq 'File') {
+        Write-Host '  Live:     hatan-live\  (kernel + initrd, no ISO file)'
+    } else {
+        Write-Host "  Arch ISO: $isoPath"
+    }
     Write-Host '  On Deck: Volume+ + Power -> Boot Manager -> USB'
-    Write-Host '  Then: HATAN OS - Auto Install -> Enter'
     Write-Host '  Read: USB\ابدأ-هنا.txt'
     Write-Host ''
     Write-Host '  Login after install: deck / deck'

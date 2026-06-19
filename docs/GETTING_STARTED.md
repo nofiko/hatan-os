@@ -4,7 +4,7 @@
 
 - Steam Deck LCD
 - USB 16GB+ (للتثبيت الأول)
-- اتصال إنترنت أثناء التثبيت
+- اتصال إنترنت أثناء التثبيت (مستودعات Valve: `steamdeck-packages.steamos.cloud`)
 - (اختياري) وسيط Windows على USB لاحقاً لتثبيت Windows
 
 ## مسار التثبيت السريع

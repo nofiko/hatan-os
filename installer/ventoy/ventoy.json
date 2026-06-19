@@ -1,34 +1,9 @@
 {
   "control": [
-    { "VTOY_DEFAULT_MENU_MODE": "0" },
+    { "VTOY_DEFAULT_MENU_MODE": "1" },
+    { "VTOY_DEFAULT_IMAGE": "F6>" },
     { "VTOY_TIMEOUT": "15" },
     { "VTOY_MENU_TIMEOUT": "5" },
-    { "VTOY_DEFAULT_SEARCH_ROOT": "/ISO" }
-  ],
-  "injection": [
-    {
-      "image": "/ISO/archlinux-x86_64_VTGRUB2.iso",
-      "archive": "/ventoy/live_injection.tar.gz"
-    },
-    {
-      "image": "/ISO/archlinux-x86_64.iso",
-      "archive": "/ventoy/live_injection.tar.gz"
-    }
-  ],
-  "menu_alias": [
-    {
-      "image": "/ISO/archlinux-x86_64_VTGRUB2.iso",
-      "alias": "HATAN OS - Auto Install (recommended)"
-    },
-    {
-      "image": "/ISO/archlinux-x86_64.iso",
-      "alias": "HATAN OS - use GRUB2 mode if black screen"
-    }
-  ],
-  "menu_tip": [
-    {
-      "image": "/ISO/archlinux-x86_64_VTGRUB2.iso",
-      "tip": "HATAN OS: Press Enter. Install starts automatically."
-    }
+    { "VTOY_FILT_DOT_UNDERSCORE_FILE": "1" }
   ]
 }

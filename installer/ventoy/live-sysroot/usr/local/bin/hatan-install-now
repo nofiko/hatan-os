@@ -13,6 +13,7 @@ find_hatan_project() {
     local candidates=(
         "/opt/hatan-os"
         "/run/archiso/bootmnt/hatan-os"
+        "/run/archiso/bootmnt/ventoy/hatan-os"
         "/mnt/usb/hatan-os"
     )
 
@@ -37,7 +38,8 @@ find_hatan_project() {
     return 1
 }
 
-if ! ping -c1 -W2 archlinux.org >/dev/null 2>&1; then
+if ! ping -c1 -W2 steamdeck-packages.steamos.cloud >/dev/null 2>&1 && \
+   ! ping -c1 -W2 archlinux.org >/dev/null 2>&1; then
     echo "[hatan] internet is not connected."
     echo "[hatan] connect wifi first with:"
     echo "  iwctl"

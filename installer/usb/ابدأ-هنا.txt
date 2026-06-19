@@ -1,22 +1,31 @@
-HATAN OS — USB جاهز للتثبيت
-============================
+HATAN OS — التثبيت من تطبيق الملفات
+=====================================
 
-على Steam Deck:
-  1. Volume+ + Power  →  Boot Manager  →  USB
-  2. اختر: HATAN OS - Auto Install
-  3. اضغط Enter مرة واحدة
-  4. انتظر 30-60 دقيقة (لا تطفئ الجهاز)
+═══ الطريقة الأسهل (من Steam Deck مباشرة) ═══
 
-إذا شاشة سوداء:
-  - اختر GRUB2 mode بدل Normal
+  1. أدخل وضع سطح المكتب (زر Steam → Power → Switch to Desktop)
+  2. وصّل USB الذي فيه مجلد hatan-os
+  3. افتح تطبيق «الملفات»
+  4. افتح الفلاش → انقر مرتين:
+       «تثبيت HATAN OS»
+  5. أول مرة: نقرة يمين → السماح بالتشغيل
+  6. أدخل كلمة مرور Steam عند الطلب
+  7. اتبع المثبّت الرسومي (30–60 دقيقة)
 
-إذا لم يبدأ التثبيت تلقائياً:
-  login: root   (بدون كلمة مرور)
-  bash /run/archiso/bootmnt/hatan-os/installer/live-install.sh
+  يحافظ على SteamOS ويضيف HATAN (Dual Boot) افتراضياً.
 
-أو:
-  mount /dev/sda1 /mnt
-  bash /mnt/hatan-os/installer/live-install.sh
+═══ إن لم يعمل النقر ═══
 
-بعد التثبيت: أزل USB ثم reboot
+  افتح Konsole واكتب:
+    cd /run/media/deck/اسم-الفلاش
+    bash ./hatan-install-from-files.sh
+
+═══ الإقلاع من USB (قرص فارغ) ═══
+
+  Volume+ + Power → Boot Manager → USB
+  اختر: HATAN OS - Auto Install
+
+بعد التثبيت: أعد التشغيل
 الدخول: deck / deck
+
+راجع: docs/INSTALL-FROM-FILES.md

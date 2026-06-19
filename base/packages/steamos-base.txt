@@ -1,0 +1,27 @@
+# HATAN OS — حزم pacstrap الأولية (أساس SteamOS على القرص)
+# تُثبَّت من core-main + jupiter-main عبر scripts/pacstrap-steamos.sh
+
+# نظام أساسي (core-main)
+base
+mkinitcpio
+
+# نواة وتعريفات Deck (jupiter-main)
+linux-neptune
+linux-firmware-neptune
+amd-ucode
+steamdeck-dsp
+
+# شبكة وصوت
+networkmanager
+iwd
+pipewire
+pipewire-pulse
+wireplumber
+iptables
+
+# إقلاع وتثبيت
+sudo
+grub
+efibootmgr
+dosfstools
+e2fsprogs

@@ -1,45 +1,47 @@
-# HATAN OS - الحزم الأساسية
-# تعريفات Valve + دعم Steam Deck LCD
+# HATAN OS — أساس SteamOS (Holo + Jupiter)
+# تعريفات Valve + تجربة Steam Deck LCD
 
-# Kernel
+# ── Holo (إعدادات SteamOS) ─────────────────────────────
+holo-main/holo-keyring
+holo-main/holo-wireplumber
+holo-main/noise-suppression-for-voice-git
+
+# ── نواة Deck ────────────────────────────────────────────
 jupiter-main/linux-neptune
 jupiter-main/linux-neptune-headers
 jupiter-main/linux-firmware-neptune
 
-# دعم الهاردوير
+# ── دعم الهاردوير ────────────────────────────────────────
 jupiter-main/jupiter-hw-support
 jupiter-main/jupiter-legacy-support
 jupiter-main/jupiter-fan-control
 jupiter-main/jupiter-dock-updater-bin
 jupiter-main/steamdeck-dsp
 
-# الرسوميات
+# ── الرسوميات والجلسة ───────────────────────────────────
 jupiter-main/mesa
 jupiter-main/gamescope
 jupiter-main/xorg-xwayland
 jupiter-main/vpower
-
-# الصوت
-jupiter-main/wireplumber
-holo-main/noise-suppression-for-voice-git
-
-# الشاشة والجلسة
 jupiter-main/sddm-wayland
 jupiter-main/steamdeck-kde-presets
 
-# Steam
+# ── الصوت ────────────────────────────────────────────────
+jupiter-main/wireplumber
+
+# ── Steam ────────────────────────────────────────────────
 jupiter-main/steam-jupiter-stable
 
-# Flatpak (لتطبيقات Xbox و Microsoft Store)
-flatpak
-
-# Bluetooth
+# ── Bluetooth ────────────────────────────────────────────
 jupiter-main/bluez
 jupiter-main/bluez-plugins
 jupiter-main/bluez-utils
 
-# أدوات أساسية (Python يُثبَّت عبر scripts/install-deck-packages.sh)
-base
+# ── Flatpak (Xbox · Microsoft Store · المتصفح) ─────────
+flatpak
+
+# ── أدوات أساسية (core-main) ─────────────────────────────
+# Python يُثبَّت عبر scripts/install-deck-packages.sh
 base-devel
 sudo
 networkmanager

@@ -21,8 +21,12 @@ file_permissions=(
   ["/root/.bash_profile"]="0:0:644"
   ["/opt/hatan-os/scripts/hatan-live-installer.sh"]="0:0:755"
   ["/opt/hatan-os/scripts/install-deck-packages.sh"]="0:0:755"
+  ["/opt/hatan-os/scripts/pacstrap-steamos.sh"]="0:0:755"
+  ["/opt/hatan-os/scripts/setup-steamos-base.sh"]="0:0:755"
   ["/opt/hatan-os/installer/install.sh"]="0:0:755"
   ["/opt/hatan-os/installer/iso-install.sh"]="0:0:755"
   ["/opt/hatan-os/installer/hat-install.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/launch-from-files.sh"]="0:0:755"
+  ["/opt/hatan-os/installer/live-install.sh"]="0:0:755"
   ["/opt/hatan-os/installer/install-server.py"]="0:0:755"
 )

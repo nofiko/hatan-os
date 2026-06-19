@@ -28,8 +28,9 @@ echo  │                                              │
 echo  └──────────────────────────────────────────────┘
 echo.
 echo  بعد البناء:
-echo    • Rufus: GPT + UEFI + FAT32 + ISO mode
-echo    • Boot Deck من USB → واجهة HATAN + لوحة لمس
+echo    • Etcher أو Rufus: GPT + UEFI + DD image mode
+echo    • التحقق: bash scripts/verify-built-iso.sh build/output/*.iso
+echo    • Boot Deck من USB -^> HATAN OS Auto Install
 echo.
 echo  راجع docs/ISO.md للتفاصيل.
 echo.

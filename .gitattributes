@@ -1,0 +1,9 @@
+*.sh text eol=lf
+*.bash text eol=lf
+*.cfg text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.json text eol=lf
+*.desktop text eol=lf
+*.template text eol=lf
+profiledef.sh text eol=lf

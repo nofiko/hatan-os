@@ -54,10 +54,16 @@ require_cmd() {
 }
 
 find_project_dir() {
+    if [[ -n "${HATAN_PROJECT_DIR:-}" && -d "${HATAN_PROJECT_DIR}/installer" ]]; then
+        PROJECT_DIR="$HATAN_PROJECT_DIR"
+        return 0
+    fi
+
     local candidates=(
         "/opt/hatan-os"
         "/mnt/usb/hatan-os"
         "/run/archiso/bootmnt/hatan-os"
+        "/run/archiso/bootmnt/ventoy/hatan-os"
         "/run/media/archiso/hatan-os"
     )
     local p
@@ -68,7 +74,7 @@ find_project_dir() {
         fi
     done
 
-    p="$(find /run/media /mnt -maxdepth 4 -type d -name hatan-os 2>/dev/null | head -n1 || true)"
+    p="$(find /run/media /mnt -maxdepth 5 -type d -name hatan-os 2>/dev/null | head -n1 || true)"
     if [[ -n "$p" && -d "$p/installer" ]]; then
         PROJECT_DIR="$p"
         return 0
@@ -96,6 +102,9 @@ pick_target_disk() {
 }
 
 ensure_internet() {
+    if ping -c1 -W2 steamdeck-packages.steamos.cloud >/dev/null 2>&1; then
+        return 0
+    fi
     if ping -c1 -W2 archlinux.org >/dev/null 2>&1; then
         return 0
     fi
@@ -123,9 +132,10 @@ resolve_partitions() {
 
 write_root_cmdline() {
     local root_uuid="$1"
-    arch-chroot "$MNT" bash -c "echo 'root=UUID=${root_uuid} rw' > /etc/cmdline.d/00-root.conf"
-    arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"root=UUID=${root_uuid} rw\"|" /etc/default/grub 2>/dev/null || \
-        arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"root=UUID=${root_uuid} rw\"' >> /etc/default/grub"
+    local deck_opts="root=UUID=${root_uuid} rw amd_iommu=off amdgpu.dc=1 rd.systemd.gpt_auto=no nvme_load=yes"
+    arch-chroot "$MNT" bash -c "echo '${deck_opts}' > /etc/cmdline.d/00-root.conf"
+    arch-chroot "$MNT" sed -i "s|^GRUB_CMDLINE_LINUX=.*|GRUB_CMDLINE_LINUX=\"${deck_opts}\"|" /etc/default/grub 2>/dev/null || \
+        arch-chroot "$MNT" bash -c "echo 'GRUB_CMDLINE_LINUX=\"${deck_opts}\"' >> /etc/default/grub"
 }
 
 disable_uki_if_present() {
@@ -207,11 +217,10 @@ main() {
 
     fi
 
-    report_progress "تثبيت Arch الأساسي" 18
-    pacstrap "$MNT" \
-        base base-devel linux linux-firmware amd-ucode \
-        networkmanager sudo grub efibootmgr dosfstools e2fsprogs \
-        pipewire pipewire-pulse wireplumber mkinitcpio
+    report_progress "تثبيت أساس SteamOS" 18
+    chmod +x "$PROJECT_DIR/scripts/pacstrap-steamos.sh"
+    bash "$PROJECT_DIR/scripts/pacstrap-steamos.sh" \
+        "$MNT" "$PROJECT_DIR/base/packages/steamos-base.txt" "$PROJECT_DIR"
     genfstab -U "$MNT" >> "$MNT/etc/fstab"
 
     report_progress "نسخ ملفات HATAN OS" 22
@@ -253,7 +262,7 @@ main() {
 
     disable_uki_if_present
     write_root_cmdline "$root_uuid"
-    arch-chroot "$MNT" mkinitcpio -p linux 2>/dev/null || true
+    arch-chroot "$MNT" mkinitcpio -p linux-neptune 2>/dev/null || arch-chroot "$MNT" mkinitcpio -P 2>/dev/null || true
     arch-chroot "$MNT" grub-install \
         --target=x86_64-efi \
         --efi-directory=/boot \

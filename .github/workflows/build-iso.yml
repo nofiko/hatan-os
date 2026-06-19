@@ -38,21 +38,32 @@ jobs:
         run: |
           pacman-key --init
           pacman-key --populate archlinux
-          pacman -Syu --noconfirm archiso rsync git base-devel systemd grub mtools dosfstools
+          pacman -Syu --noconfirm archiso rsync git base-devel systemd \
+            grub mtools dosfstools libisoburn squashfs-tools
+
+      - name: Validate ISO profile
+        run: |
+          chmod +x scripts/validate-iso-profile.sh scripts/verify-built-iso.sh build/build-iso.sh
+          bash scripts/validate-iso-profile.sh
 
       - name: Build ISO
-        run: |
-          chmod +x build/build-iso.sh
-          ./build/build-iso.sh
+        run: ./build/build-iso.sh
 
       - name: List output
-        run: ls -lh build/output/
+        run: |
+          ls -lh build/output/
+          ls -lh hatan-os-latest.iso 2>/dev/null || true
+          sha256sum build/output/*.iso hatan-os-latest.iso 2>/dev/null || true
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
           name: hatan-os-iso-${{ github.sha }}
-          path: build/output/*.iso
+          path: |
+            build/output/*.iso
+            hatan-os-latest.iso
+            build/iso-build.log
+            build/iso-validate.log
           retention-days: 30
           if-no-files-found: error
 
@@ -60,5 +71,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
-          files: build/output/*.iso
+          files: |
+            build/output/*.iso
+            hatan-os-latest.iso
           generate_release_notes: true

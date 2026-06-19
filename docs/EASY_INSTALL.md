@@ -1,14 +1,21 @@
 # HATAN OS — أسهل طرق التثبيت
 
-## الطريقة 1 — الأسهل (موصى بها)
+## الطريقة 1 — الأسهل (Boot from file، بدون ISO على USB)
 
-1. اكتب **ISO الجديد** على USB (Rufus: GPT · UEFI · FAT32 · **ISO**)
+1. على Windows شغّل `install-hatan.bat` واختر **1** (أو `install-hatan-file.bat`)
 2. Boot من USB على Deck
-3. **لا تفعل شيئاً** — التثبيت يبدأ **تلقائياً** خلال 8 ثوانٍ
+3. اختر **HATAN OS - Auto Install (Boot from file)**
 4. انتظر 30–60 دقيقة
 5. **أزل USB** ثم أعد التشغيل
 
-> الخيار الافتراضي في قائمة الإقلاع: **HATAN OS — تثبيت تلقائي**
+> لا يوجد ملف ISO على الفلاش — الإقلاع من `hatan-live\` (vmlinuz + initrd)
+
+---
+
+## الطريقة 1ب — ISO على USB (الوضع الكلاسيكي)
+
+1. شغّل `install-hatan.bat` واختر **2**
+2. Boot من USB → **HATAN OS - Auto Install (ISO)**
 
 ---
 
