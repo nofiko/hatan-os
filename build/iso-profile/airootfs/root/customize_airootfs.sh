@@ -21,9 +21,12 @@ ln -sf /usr/share/zoneinfo/UTC /etc/localtime 2>/dev/null || true
 
 systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable iwd.service 2>/dev/null || true
+systemctl enable hatan-wifi-autoconnect.service 2>/dev/null || true
 systemctl enable getty@tty1.service 2>/dev/null || true
 
-# WiFi Deck: NM يستخدم iwd كخلفية — لا تستخدم iwctl station wlan0 مباشرة
+# WiFi Deck: NM يستخدم iwd كخلفية — ملفات الاتصال الافتراضية 600
+chmod 600 /etc/NetworkManager/system-connections/*.nmconnection 2>/dev/null || true
+chmod +x /usr/local/bin/hatan-wifi-autoconnect.sh 2>/dev/null || true
 chmod +x /usr/local/bin/hatan-wifi 2>/dev/null || true
 
 mkdir -p /etc/hatan

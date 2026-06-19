@@ -11,8 +11,11 @@ export HATAN_PROJECT_DIR="$HAT_DIR"
 
 log() { echo "[hatan-live] $*"; }
 
-for i in $(seq 1 30); do
-    nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting' && break
+/usr/local/bin/hatan-wifi-autoconnect.sh 2>/dev/null || true
+
+for i in $(seq 1 45); do
+    ping -c1 -W1 steamdeck-packages.steamos.cloud &>/dev/null && break
+    nmcli -t -f STATE general 2>/dev/null | grep -qE 'connected|connecting' && sleep 1 && continue
     sleep 1
 done
 

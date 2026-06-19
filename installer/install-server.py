@@ -51,6 +51,9 @@ def prepare_wifi():
     _run(['rfkill', 'unblock', 'all'], timeout=5)
     _run(['systemctl', 'start', 'iwd'], timeout=8)
     _run(['systemctl', 'start', 'NetworkManager'], timeout=8)
+    autoconnect = Path('/usr/local/bin/hatan-wifi-autoconnect.sh')
+    if autoconnect.is_file():
+        _run(['bash', str(autoconnect)], timeout=45)
     _run(['nmcli', 'radio', 'wifi', 'on'], timeout=5)
     _run(['nmcli', 'device', 'wifi', 'rescan'], timeout=10)
 
