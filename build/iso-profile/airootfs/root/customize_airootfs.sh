@@ -23,13 +23,16 @@ systemctl enable NetworkManager.service 2>/dev/null || true
 systemctl enable iwd.service 2>/dev/null || true
 systemctl enable getty@tty1.service 2>/dev/null || true
 
+# WiFi Deck: NM يستخدم iwd كخلفية — لا تستخدم iwctl station wlan0 مباشرة
+chmod +x /usr/local/bin/hatan-wifi 2>/dev/null || true
+
 mkdir -p /etc/hatan
 echo '1' > /etc/hatan/iso-live
 
 cat > /etc/motd << 'EOF'
 
   HATAN OS — Steam Deck
-  root / hatan  |  hatan-install-now
+  root / hatan  |  hatan-wifi  |  hatan-install-now
 
 EOF
 

@@ -1,0 +1,57 @@
+#!/bin/bash
+# HATAN OS — اتصال WiFi من ISO live (Steam Deck)
+set -uo pipefail
+
+echo "=== HATAN OS — WiFi ==="
+
+# إلغاء حظر الراديو
+if command -v rfkill &>/dev/null; then
+    rfkill unblock wifi 2>/dev/null || rfkill unblock all 2>/dev/null || true
+fi
+
+systemctl start iwd 2>/dev/null || true
+systemctl start NetworkManager 2>/dev/null || true
+sleep 2
+
+nmcli radio wifi on 2>/dev/null || true
+
+echo ""
+echo "الأجهزة المتاحة:"
+ip -br link | grep -iE 'wlan|wlp' || ip -br link
+echo ""
+nmcli -t -f DEVICE,TYPE,STATE device 2>/dev/null || true
+echo ""
+
+if ping -c1 -W2 steamdeck-packages.steamos.cloud &>/dev/null; then
+    echo "✅ متصل بالإنترنت"
+    exit 0
+fi
+
+SSID="${1:-}"
+PASS="${2:-}"
+
+if [[ -n "$SSID" ]]; then
+    if [[ -n "$PASS" ]]; then
+        nmcli device wifi connect "$SSID" password "$PASS"
+    else
+        nmcli device wifi connect "$SSID"
+    fi
+else
+    echo "الشبكات القريبة:"
+    nmcli device wifi list 2>/dev/null || true
+    echo ""
+    echo "الاتصال:"
+    echo "  hatan-wifi \"اسم_الشبكة\" \"كلمة_المرور\""
+    echo ""
+    echo "أو يدوياً:"
+    echo "  nmcli device wifi connect \"SSID\" password \"PASS\""
+    exit 1
+fi
+
+sleep 2
+if ping -c1 -W2 steamdeck-packages.steamos.cloud &>/dev/null; then
+    echo "✅ متصل بالإنترنت"
+else
+    echo "❌ لم يتصل — جرّب كلمة مرور أخرى أو شبكة 2.4GHz"
+    exit 1
+fi

@@ -33,6 +33,94 @@ install_running = False
 install_process = None
 
 
+def _run(cmd, timeout=12):
+    try:
+        return subprocess.run(
+            cmd,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+    except (subprocess.TimeoutExpired, FileNotFoundError):
+        return None
+
+
+def prepare_wifi():
+    _run(['rfkill', 'unblock', 'wifi'], timeout=5)
+    _run(['rfkill', 'unblock', 'all'], timeout=5)
+    _run(['systemctl', 'start', 'iwd'], timeout=8)
+    _run(['systemctl', 'start', 'NetworkManager'], timeout=8)
+    _run(['nmcli', 'radio', 'wifi', 'on'], timeout=5)
+    _run(['nmcli', 'device', 'wifi', 'rescan'], timeout=10)
+
+
+def get_wifi():
+    r = _run(['nmcli', '-t', '-f', 'ACTIVE,SSID,SIGNAL', 'dev', 'wifi'])
+    if not r or r.returncode != 0:
+        return {'connected': False, 'ssid': '', 'strength': 0}
+    for line in r.stdout.splitlines():
+        parts = line.split(':')
+        if len(parts) >= 3 and parts[0] == 'yes':
+            try:
+                strength = int(parts[2] or 0)
+            except ValueError:
+                strength = 0
+            return {'connected': True, 'ssid': parts[1], 'strength': strength}
+    return {'connected': False, 'ssid': '', 'strength': 0}
+
+
+def wifi_scan():
+    prepare_wifi()
+    r = _run(['nmcli', '-t', '-f', 'IN-USE,SSID,SIGNAL,SECURITY', 'dev', 'wifi', 'list'], timeout=15)
+    if not r or r.returncode != 0:
+        return []
+    seen = set()
+    networks = []
+    for line in r.stdout.splitlines():
+        parts = line.split(':')
+        if len(parts) < 4:
+            continue
+        in_use, ssid, signal, security = parts[0], parts[1], parts[2], parts[3]
+        if not ssid or ssid in seen:
+            continue
+        seen.add(ssid)
+        try:
+            sig = int(signal or 0)
+        except ValueError:
+            sig = 0
+        networks.append({
+            'ssid': ssid,
+            'signal': sig,
+            'secured': security not in ('', '--'),
+            'active': in_use == '*',
+        })
+    networks.sort(key=lambda n: (-n['signal'], n['ssid']))
+    return networks
+
+
+def wifi_connect(ssid: str, password: str):
+    prepare_wifi()
+    cmd = ['nmcli', 'dev', 'wifi', 'connect', ssid]
+    if password:
+        cmd += ['password', password]
+    r = _run(cmd, timeout=25)
+    if not r:
+        return False, 'انتهت المهلة'
+    if r.returncode != 0:
+        err = (r.stderr or r.stdout or '').strip().splitlines()
+        return False, err[-1] if err else 'فشل الاتصال'
+    return True, ''
+
+
+def has_internet() -> bool:
+    for host in ('steamdeck-packages.steamos.cloud', 'archlinux.org', '1.1.1.1'):
+        r = _run(['ping', '-c1', '-W2', host], timeout=5)
+        if r and r.returncode == 0:
+            return True
+    return False
+
+
 def is_root() -> bool:
     if hasattr(os, 'geteuid'):
         return os.geteuid() == 0
@@ -138,13 +226,27 @@ class InstallerHandler(SimpleHTTPRequestHandler):
 
         if parsed.path == '/api/check':
             live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
+            wifi = get_wifi()
             self.send_json({
                 'root': is_root() or live,
                 'liveIso': live,
                 'fromFiles': FROM_FILES,
                 'dualBoot': os.environ.get('HATAN_DUAL_BOOT', '0') == '1',
                 'targetDisk': os.environ.get('HATAN_TARGET_DISK', '/dev/nvme0n1'),
+                'wifi': wifi,
+                'online': has_internet() if live else True,
             })
+            return
+
+        if parsed.path == '/api/wifi/status':
+            self.send_json({
+                'wifi': get_wifi(),
+                'online': has_internet(),
+            })
+            return
+
+        if parsed.path == '/api/wifi/scan':
+            self.send_json({'networks': wifi_scan()})
             return
 
         if parsed.path == '/api/status':
@@ -192,10 +294,36 @@ class InstallerHandler(SimpleHTTPRequestHandler):
     def do_POST(self):
         global install_running
 
+        if self.path == '/api/wifi/connect':
+            length = int(self.headers.get('Content-Length', 0))
+            body = self.rfile.read(length) if length else b'{}'
+            try:
+                data = json.loads(body.decode('utf-8'))
+            except json.JSONDecodeError:
+                self.send_json({'error': 'طلب غير صالح'}, 400)
+                return
+            ssid = (data.get('ssid') or '').strip()
+            if not ssid:
+                self.send_json({'error': 'اسم الشبكة مطلوب'}, 400)
+                return
+            ok, err = wifi_connect(ssid, data.get('password') or '')
+            if ok:
+                self.send_json({
+                    'ok': True,
+                    'wifi': get_wifi(),
+                    'online': has_internet(),
+                })
+            else:
+                self.send_json({'error': err or 'فشل الاتصال'}, 400)
+            return
+
         if self.path == '/api/install':
             live = IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file()
             if not is_root() and not live:
                 self.send_json({'error': 'يتطلب صلاحيات root'}, 403)
+                return
+            if live and not has_internet():
+                self.send_json({'error': 'يتطلب اتصال إنترنت — اتصل بالواي فاي أولاً'}, 400)
                 return
             if install_running:
                 self.send_json({'error': 'التثبيت قيد التشغيل'}, 409)
@@ -234,6 +362,9 @@ def main():
         sys.exit(1)
 
     write_progress('في الانتظار', 0)
+
+    if IS_LIVE_ISO or Path('/etc/hatan/iso-live').is_file():
+        prepare_wifi()
 
     print(f'[HATAN OS] Installer: http://127.0.0.1:{PORT}')
     server = HTTPServer(('127.0.0.1', PORT), InstallerHandler)

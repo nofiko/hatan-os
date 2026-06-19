@@ -3,7 +3,7 @@ const HATAN_INSTALLER = {
   tagline: 'نظام هتان || HATAN OS',
   description: 'هو نظام خفيف خاص بجهاز steam deck',
   version: '0.1.0',
-  steps: ['welcome', 'confirm', 'progress', 'complete'],
+  steps: ['welcome', 'wifi', 'confirm', 'progress', 'complete'],
   installPhases: [
     { id: 'system', label: 'تثبيت النظام', order: 1 },
     { id: 'apps', label: 'تثبيت التطبيقات', order: 2 }

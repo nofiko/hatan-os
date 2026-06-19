@@ -30,7 +30,24 @@
         <p class="brand-desc" id="brand-desc">هو نظام خفيف خاص بجهاز steam deck</p>
       </section>
 
-      <!-- 2. تأكيد -->
+      <!-- 2. واي فاي -->
+      <section class="screen" id="screen-wifi">
+        <h2 class="screen-title">الاتصال بالإنترنت</h2>
+        <p class="screen-desc">التثبيت يحتاج إنترنت لتحميل النظام. اختر شبكة الواي فاي:</p>
+        <div class="wifi-status" id="wifi-status"></div>
+        <button type="button" class="btn btn-ghost wifi-scan-btn" id="wifi-scan-btn">بحث عن شبكات</button>
+        <div class="wifi-network-list" id="wifi-network-list"></div>
+        <div class="wifi-connect-form" id="wifi-connect-form">
+          <p class="wifi-connect-label">الاتصال بـ <strong id="wifi-connect-ssid"></strong></p>
+          <input type="password" class="wifi-connect-input" id="wifi-connect-pass" placeholder="كلمة المرور" autocomplete="off">
+          <div class="wifi-connect-actions">
+            <button type="button" class="btn btn-ghost" id="wifi-connect-back">رجوع</button>
+            <button type="button" class="btn btn-primary" id="wifi-connect-btn">اتصال</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. تأكيد -->
       <section class="screen" id="screen-confirm">
         <h2 class="screen-title">هل أنت مستعد؟</h2>
         <div class="warning-box" id="warning-box">
@@ -40,7 +57,7 @@
         <ul class="feature-list simple" id="confirm-summary"></ul>
       </section>
 
-      <!-- 3. التقدّم -->
+      <!-- 4. التقدّم -->
       <section class="screen progress-only" id="screen-progress">
         <div class="install-phases active-track" id="install-phases-progress"></div>
         <div class="progress-wrap">
@@ -54,7 +71,7 @@
         </div>
       </section>
 
-      <!-- 4. اكتمال -->
+      <!-- 5. اكتمال -->
       <section class="screen" id="screen-complete">
         <div class="complete-icon">✓</div>
         <h2 class="screen-title">تم التثبيت بنجاح</h2>

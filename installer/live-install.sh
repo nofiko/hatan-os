@@ -108,9 +108,8 @@ ensure_internet() {
     if ping -c1 -W2 archlinux.org >/dev/null 2>&1; then
         return 0
     fi
-    warn "لا يوجد إنترنت. اتصل بالشبكة أولاً عبر iwctl."
-    warn "مثال سريع:"
-    warn "  iwctl -> station wlan0 scan -> station wlan0 get-networks -> station wlan0 connect \"SSID\""
+    warn "لا يوجد إنترنت. استخدم واجهة المثبّت لاختيار شبكة واي فاي."
+    warn "أو من الطرفية: hatan-wifi \"SSID\" \"password\""
     err "مطلوب إنترنت لإكمال التثبيت."
 }
 
