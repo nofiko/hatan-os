@@ -79,6 +79,11 @@ mkdir -p "$MNT/boot"
 mount "$EFI_PART" "$MNT/boot"
 
 # ── 4. pacstrap (أساس SteamOS / Holo) ───────────────────
+if ! ping -c1 -W3 steamdeck-packages.steamos.cloud >/dev/null 2>&1 && \
+   ! ping -c1 -W3 archlinux.org >/dev/null 2>&1; then
+    err "لا يوجد إنترنت — اتصل بالواي فاي من واجهة المثبّت ثم أعد التثبيت"
+fi
+
 report_progress "تثبيت أساس SteamOS" 18
 chmod +x "$PROJECT_DIR/scripts/pacstrap-steamos.sh"
 bash "$PROJECT_DIR/scripts/pacstrap-steamos.sh" \
