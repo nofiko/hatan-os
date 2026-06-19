@@ -81,6 +81,42 @@ if [[ "$UEFI_OK" -eq 0 ]]; then
     fail "لم يُثبت دعم UEFI (لا BOOTX64 ولا El Torito ولا ESP hybrid)"
 fi
 
+# ── initramfs يجب أن يحتوي خطاف archiso ─────────────────
+if command -v bsdtar &>/dev/null; then
+    INITRD_TMP=$(mktemp)
+    if bsdtar -xOf "$ISO" "${INSTALL_DIR}/boot/x86_64/initramfs-linux-neptune.img" >"$INITRD_TMP" 2>/dev/null; then
+        if command -v lsinitcpio &>/dev/null; then
+            if lsinitcpio "$INITRD_TMP" 2>/dev/null | grep -qE '/hooks/archiso'; then
+                log "initramfs يحتوي خطاف archiso (live root discovery)"
+            else
+                fail "initramfs-linux-neptune.img لا يحتوي خطاف archiso — فشل إقلاع live متوقع"
+            fi
+        else
+            warn "lsinitcpio غير متوفر — تخطّي فحص خطاف archiso"
+        fi
+    else
+        warn "تعذّر استخراج initramfs من ISO للفحص"
+    fi
+    rm -f "$INITRD_TMP"
+fi
+
+# ── grub.cfg: استبدال متغيرات archiso ─────────────────────
+if command -v xorriso &>/dev/null; then
+    GRUB_TMP=$(mktemp)
+    xorriso -indev "$ISO" -extract /boot/grub/grub.cfg "$GRUB_TMP" 2>/dev/null || \
+        xorriso -indev "$ISO" -extract /grub/grub.cfg "$GRUB_TMP" 2>/dev/null || true
+    if [[ -s "$GRUB_TMP" ]]; then
+        if grep -q '%ARCHISO_UUID%' "$GRUB_TMP"; then
+            fail "grub.cfg لا يزال يحتوي %ARCHISO_UUID% غير مُستبدَل"
+        elif grep -qE 'archisosearchuuid=[0-9a-f-]{36}' "$GRUB_TMP"; then
+            log "grub.cfg: archisosearchuuid مُستبدَل بـ UUID فعلي"
+        else
+            warn "grub.cfg: لم يُعثر على archisosearchuuid UUID — راجع kernel cmdline"
+        fi
+    fi
+    rm -f "$GRUB_TMP"
+fi
+
 echo ""
 if [[ $ERRORS -gt 0 ]]; then
     echo "ISO verification FAILED ($ERRORS errors, $WARNS warnings)"

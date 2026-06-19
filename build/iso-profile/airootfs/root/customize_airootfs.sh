@@ -35,4 +35,16 @@ EOF
 
 chmod +x /usr/local/bin/hatan-install-now 2>/dev/null || true
 
+# linux-neptune installs a default mkinitcpio preset (no archiso hooks).
+# Without archiso hooks the live initramfs cannot find/mount airootfs.sfs.
+install -Dm644 /dev/stdin /etc/mkinitcpio.d/linux-neptune.preset <<'EOF'
+PRESETS=('archiso')
+ALL_kver='/boot/vmlinuz-linux-neptune'
+archiso_config='/etc/mkinitcpio.conf.d/archiso.conf'
+archiso_image="/boot/initramfs-linux-neptune.img"
+EOF
+
+echo "HATAN OS: rebuilding initramfs with archiso hooks..."
+mkinitcpio -p linux-neptune
+
 echo "HATAN OS: airootfs ready (Steam Deck)."

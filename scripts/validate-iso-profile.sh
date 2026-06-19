@@ -31,6 +31,8 @@ echo "" | tee -a "$LOG"
 # ── ملفات إلزامية ────────────────────────────────────────
 for f in profiledef.sh pacman.conf packages.x86_64 bootstrap_packages \
          grub/grub.cfg grub/loopback.cfg \
+         airootfs/etc/mkinitcpio.conf.d/archiso.conf \
+         airootfs/etc/mkinitcpio.d/linux-neptune.preset \
          airootfs/root/customize_airootfs.sh \
          airootfs/root/.bash_profile \
          airootfs/usr/local/bin/hatan-install-now; do
@@ -63,6 +65,17 @@ for pkg in base linux-neptune linux-firmware-neptune mkinitcpio mkinitcpio-archi
     grep -qE "^${pkg}$" "$PKG" || fail "packages.x86_64: حزمة ناقصة: $pkg"
 done
 log "packages.x86_64 تحتوي نواة + initramfs + grub"
+
+# ── mkinitcpio archiso (إلزامي لإقلاع live) ───────────────
+ARCHISO_CONF="$PROFILE/airootfs/etc/mkinitcpio.conf.d/archiso.conf"
+require_grep "$ARCHISO_CONF" 'archiso' 'archiso.conf: يجب تضمين hook archiso'
+require_grep "$ARCHISO_CONF" 'archiso_loop_mnt' 'archiso.conf: يجب archiso_loop_mnt'
+PRESET="$PROFILE/airootfs/etc/mkinitcpio.d/linux-neptune.preset"
+require_grep "$PRESET" "PRESETS=\('archiso'\)" 'linux-neptune.preset: PRESETS archiso'
+require_grep "$PRESET" 'archiso_config=' 'linux-neptune.preset: archiso_config'
+require_grep "$PROFILE/airootfs/root/customize_airootfs.sh" 'mkinitcpio -p linux-neptune' \
+    'customize_airootfs.sh: يجب إعادة بناء initramfs'
+log "mkinitcpio archiso hooks مُعرَّفة لـ linux-neptune"
 
 # ── pacman Valve ───────────────────────────────────────
 PAC="$PROFILE/pacman.conf"
